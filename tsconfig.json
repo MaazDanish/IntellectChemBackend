@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["ES2017"],
+    "lib": ["ES2017", "DOM"],
     "module": "commonjs",
     "strict": false,
     "esModuleInterop": true,
@@ -14,9 +14,8 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "noImplicitAny": false,
-    "noImplicitReturns": false,
-    "noImplicitThis": false,
-    "strictNullChecks": false
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["node", "express"]
   },
   "include": [
     "src/**/*"
