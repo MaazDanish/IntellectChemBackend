@@ -1,22 +1,3 @@
-// {
-//   "compilerOptions": {
-//     "target": "ES6",
-//     "module": "commonjs",
-//     "strict": true,
-//     "esModuleInterop": true,
-//     "skipLibCheck": true,
-//     "forceConsistentCasingInFileNames": true,
-//     "outDir": "./dist",
-//     "rootDir": "./src"
-//   },
-//   "include": [
-//     "src"
-//   ],
-//   "exclude": [
-//     "node_modules"
-//   ]
-// }
-
 {
   "compilerOptions": {
     "target": "ES2017",
@@ -31,8 +12,7 @@
     "rootDir": "./src",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "typeRoots": ["./node_modules/@types"],
-    "types": ["node"]
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": [
     "src/**/*"
