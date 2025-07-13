@@ -1,4 +1,4 @@
-import logger from "../logger";
+import logger from "../logger.js";
 import CommonUtils from "../utils/common.js";
 import { Request, Response } from "express";
 import { eReturnCodes } from "../enums/commonEnums.js";
