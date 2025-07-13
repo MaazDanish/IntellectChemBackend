@@ -3,9 +3,8 @@ import express from "express";
 import routes from "./routes/routes.js";
 import session from "express-session";
 import swaggerUi from "swagger-ui-express";
-const swaggerFile = await import("./swagger-output.json", {
-    assert: { type: "json" }
-});
+import swaggerFile from './swagger-output.json' assert { type: 'json' };
+
 import { connectToMongoDB } from './database/db.js';
 
 const app = express();
