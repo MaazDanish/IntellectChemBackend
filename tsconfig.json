@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2020",                 // or "ES6" if needed
-    "module": "ESNext",                 // ✅ Change from commonjs to ESNext
-    "moduleResolution": "node",        // ✅ Required for ESModules
-    "resolveJsonModule": true,         // ✅ For importing JSON
+    "target": "ES2020", // or "ES6" if needed
+    "module": "ESNext", // ✅ Change from commonjs to ESNext
+    "moduleResolution": "node", // ✅ Required for ESModules
+    "resolveJsonModule": true, // ✅ For importing JSON
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
@@ -11,6 +11,10 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
