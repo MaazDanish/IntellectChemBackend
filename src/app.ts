@@ -1,9 +1,10 @@
+import fs from "fs";
 import cors from "cors";
 import express from "express";
 import routes from "./routes/routes.js";
 import session from "express-session";
 import swaggerUi from "swagger-ui-express";
-import swaggerFile from './swagger-output.json' assert { type: 'json' };
+const swaggerFile = JSON.parse(fs.readFileSync('./dist/swagger-output.json', 'utf-8'));
 
 import { connectToMongoDB } from './database/db.js';
 
