@@ -1,11 +1,11 @@
 import axios from "axios";
-import logger from "../logger";
+import logger from "../logger.js";
 import * as cheerio from "cheerio";
-import CommonUtils from "../utils/common";
-import { eReturnCodes } from "../enums/commonEnums";
-import RequestModel from "../models/common/requestModel";
-import { CommonModelDTO } from "../models/productMaster";
-import ChemicalCompound from "../models/chemicalCompound";
+import CommonUtils from "../utils/common.js";
+import { eReturnCodes } from "../enums/commonEnums.js";
+import RequestModel from "../models/common/requestModel.js";
+import { CommonModelDTO } from "../models/productMaster.js";
+import ChemicalCompound from "../models/chemicalCompound.js";
 
 
 class ReadDataFromWebService {

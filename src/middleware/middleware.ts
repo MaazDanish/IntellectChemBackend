@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { TAuthorizationModel } from "../types/common";
+import { TAuthorizationModel } from "../types/common.js";
 import { Request, Response, NextFunction } from "express";
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {

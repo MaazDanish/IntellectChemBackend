@@ -1,4 +1,4 @@
-import { eReturnCodes } from "../enums/commonEnums";
+import { eReturnCodes } from "../enums/commonEnums.js";
 
 export type TRequest = {
     orgId?: number;

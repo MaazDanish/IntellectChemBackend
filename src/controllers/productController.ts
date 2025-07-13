@@ -1,6 +1,6 @@
 import logger from "../logger";
 import { Request, Response } from "express";
-import ProductManagement from "../services/productService";
+import ProductManagement from "../services/productService.js";
 
 
 export const getList = async (req: Request, res: Response): Promise<void> => {

@@ -1,9 +1,9 @@
 import XLSX from 'xlsx';
-import logger from "../logger";
-import CommonUtils from "../utils/common";
-import { eReturnCodes } from "../enums/commonEnums";
-import RequestModel from "../models/common/requestModel";
-import ProductMaster, { CommonModelDTO } from "../models/productMaster";
+import logger from "../logger.js";
+import CommonUtils from "../utils/common.js";
+import { eReturnCodes } from "../enums/commonEnums.js";
+import RequestModel from "../models/common/requestModel.js";
+import ProductMaster, { CommonModelDTO } from "../models/productMaster.js";
 
 
 class ProductManagement {

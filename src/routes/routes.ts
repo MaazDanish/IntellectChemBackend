@@ -1,11 +1,11 @@
 import multer from "multer";
 import express from "express";
-import authMiddleware from "../middleware/middleware";
-import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById } from '../controllers/productController';
-import { extractDataFromChemSrc } from "../controllers/autoReadDataController";
-import { addEditUser, editUserDetails, getSpecificUser, getUsers, signIN, signUP } from "../controllers/userController";
-import UserValidations from "../validations/userValidation";
-import { contactUsEmail, getContactUsList, getScheduleDemoList, getSubscriberEmailList, scheduleDemo, subscribeEmail } from "../controllers/emailController";
+import authMiddleware from "../middleware/middleware.js";
+import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById } from '../controllers/productController.js';
+import { extractDataFromChemSrc } from "../controllers/autoReadDataController.js";
+import { addEditUser, editUserDetails, getSpecificUser, getUsers, signIN, signUP } from "../controllers/userController.js";
+import UserValidations from "../validations/userValidation.js";
+import { contactUsEmail, getContactUsList, getScheduleDemoList, getSubscriberEmailList, scheduleDemo, subscribeEmail } from "../controllers/emailController.js";
 
 
 

@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import CommonValidations from "./commonValidations";
+import CommonValidations from "./commonValidations.js";
 
 class UserValidations {
   public static signInValidation = [

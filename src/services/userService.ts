@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
-import logger from "../logger";
+import logger from "../logger.js";
 import jwt from "jsonwebtoken";
-import CommonUtils from "../utils/common";
-import EncryptUtils from "../utils/encrypt";
-import { eReturnCodes } from "../enums/commonEnums";
-import RequestModel from "../models/common/requestModel";
-import UserPrivilegesMapping from "../models/userPrivilegesMapping";
-import UserMaster, { UserMasterModelDTO } from "../models/userMaster";
-import { CommonModelDTO } from "../models/productMaster";
-import UsersUsage from "../models/userUsageModel";
+import CommonUtils from "../utils/common.js";
+import EncryptUtils from "../utils/encrypt.js";
+import { eReturnCodes } from "../enums/commonEnums.js";
+import RequestModel from "../models/common/requestModel.js";
+import UserPrivilegesMapping from "../models/userPrivilegesMapping.js";
+import UserMaster, { UserMasterModelDTO } from "../models/userMaster.js";
+import { CommonModelDTO } from "../models/productMaster.js";
+import UsersUsage from "../models/userUsageModel.js";
 
 dotenv.config();
 

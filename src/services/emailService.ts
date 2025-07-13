@@ -1,11 +1,11 @@
-import logger from "../logger";
-import CommonUtils from "../utils/common";
-import sendEmail from "../utils/sendEmail";
-import { TEmailOptions } from "../types/common";
-import LeadDetailsModel from "../models/leadDetails";
-import RequestModel from "../models/common/requestModel";
-import { CommonModelDTO } from "../models/productMaster";
-import { eLeadType, eReturnCodes } from "../enums/commonEnums";
+import logger from "../logger.js";
+import CommonUtils from "../utils/common.js";
+import sendEmail from "../utils/sendEmail.js";
+import { TEmailOptions } from "../types/common.js";
+import LeadDetailsModel from "../models/leadDetails.js";
+import RequestModel from "../models/common/requestModel.js";
+import { CommonModelDTO } from "../models/productMaster.js";
+import { eLeadType, eReturnCodes } from "../enums/commonEnums.js";
 
 class EmailServiceManagement {
     public async scheduleDemo(req: RequestModel): Promise<CommonModelDTO> {
