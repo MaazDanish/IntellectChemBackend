@@ -1,4 +1,6 @@
+
 const nodemailer = require("nodemailer");
+
 
 const sendMail = async (req: any, res: any) => {
   // Function to send email

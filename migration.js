@@ -1,6 +1,8 @@
-var mysql = require("mysql2");
-var migration = require("mysql-migrations");
-require("dotenv").config();
+import mysql from 'mysql2';
+import migration from 'mysql-migrations';
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 var connection = mysql.createPool({
   host: process.env.DB_HOST,

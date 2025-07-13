@@ -1,13 +1,10 @@
+import fs from "fs";
 import path from "path";
-const fs = require("fs");
 import express from "express";
 import sendMail from "./sendEmail";
 import EncryptUtils from "./encrypt";
-// import sendMail from "./sendEmail";
-// import EncryptUtils from "./encrypt";
 import multer, { StorageEngine } from "multer";
 import { promises as deletePromises } from 'fs';
-// import { TEmailOptions } from "../types/common";
 import { eReturnCodes } from "../enums/commonEnums";
 import ResponseModel from "../models/common/responseModel";
 

@@ -1,4 +1,5 @@
-const swaggerAutogen = require("swagger-autogen")();
+import swaggerAutogenFn from 'swagger-autogen';
+const swaggerAutogen = swaggerAutogenFn();
 
 const formatDate = () => {
   const date = new Date();
