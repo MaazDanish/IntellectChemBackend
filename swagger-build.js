@@ -21,7 +21,7 @@ const doc = {
     title: "SALON API",
     description: "Generated on " + formatDate(),
   },
-  host: "salonappbackend.curatedlearn.in",
+  host: "https://intellectchembackend.onrender.com",
   basePath: "/api", // by default: '/'
   schemes: [],      // by default: ['http']
   consumes: [],     // by default: ['application/json']

@@ -1,20 +1,18 @@
-
-const nodemailer = require("nodemailer");
-
+import nodemailer from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport"; // 👈 Add this
 
 const sendMail = async (req: any, res: any) => {
-  // Function to send email
-  //const { to, subject, text } = req.body;
-
-  // Create a transporter object using SMTP transport
-  let transporter = nodemailer.createTransport({
+  const transportOptions: SMTPTransport.Options = {
     host: process.env.MAIL_HOST,
-    port: process.env.MAIL_PORT,
+    port: Number(process.env.MAIL_PORT),
+    secure: false, // true for 465, false for other ports
     auth: {
       user: process.env.MAIL_USERNAME,
       pass: process.env.MAIL_PASSWORD,
     },
-  });
+  };
+
+  let transporter = nodemailer.createTransport(transportOptions);
 
   try {
     // Send email

@@ -14,14 +14,15 @@ const formatDateIST = () => {
   return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
 };
 
-const swaggerAutogen = require("swagger-autogen")();
+import swaggerAutogenFn from 'swagger-autogen';
+const swaggerAutogen = swaggerAutogenFn();
 const doc = {
   info: {
-    title: "SALON API",
+    title: "IntellectChem API's",
     description: "Generated on " + formatDateIST(),
     version: "1.0.0",
   },
-  host: "localhost:3005",
+  host: "localhost:4444",
   basePath: "/api",       // by default: '/'
   schemes: [],            // by default: ['http']
   consumes: [],           // by default: ['application/json']

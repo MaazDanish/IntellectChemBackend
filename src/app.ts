@@ -1,10 +1,10 @@
-const cors = require("cors");
+import cors from "cors";
 import express from "express";
 import routes from "./routes/routes";
-const session = require("express-session");
-const swaggerUi = require("swagger-ui-express");
+import session from "express-session";
+import swaggerUi from "swagger-ui-express";
+import swaggerFile from './swagger-output.json';
 import { connectToMongoDB } from './database/db';
-const swaggerFile = require("./swagger-output.json");
 
 const app = express();
 connectToMongoDB();
