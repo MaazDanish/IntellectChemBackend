@@ -1,10 +1,10 @@
 import cors from "cors";
 import express from "express";
-import routes from "./routes/routes";
+import routes from "./routes/routes.js";
 import session from "express-session";
 import swaggerUi from "swagger-ui-express";
 import swaggerFile from './swagger-output.json';
-import { connectToMongoDB } from './database/db';
+import { connectToMongoDB } from './database/db.js';
 
 const app = express();
 connectToMongoDB();
