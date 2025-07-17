@@ -12,15 +12,16 @@ const app = express();
 connectToMongoDB();
 
 // Use the cors middleware
-const corsOptions = {
-    origin: ['http://localhost:5174', '*'], // Allow localhost:5174 and all other origins
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true // This allows cookies to be sent with CORS requests
-};
+// const corsOptions = {
+//     origin: ['http://localhost:5174', '*'], // Allow localhost:5174 and all other origins
+//     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true // This allows cookies to be sent with CORS requests
+// };
 
 // Use the cors middleware with the configured options
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
