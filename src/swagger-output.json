@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "SALON API",
-    "description": "Generated on 25 May 2025 18:53:14",
+    "title": "IntellectChem API's",
+    "description": "Generated on 19 Jul 2025 17:49:10",
     "version": "1.0.0"
   },
-  "host": "localhost:3005",
+  "host": "localhost:4444",
   "basePath": "/api",
   "tags": [
     {
@@ -17,6 +17,19 @@
   "securityDefinitions": {},
   "paths": {
     "/getUsers": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/addEditUser": {
       "post": {
         "description": "",
         "responses": {
@@ -55,6 +68,19 @@
         }
       }
     },
+    "/editUserDetails": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/getSpecificUser": {
       "post": {
         "description": "",
@@ -69,6 +95,45 @@
       }
     },
     "/getProductList": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/editProductById": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/getSpecificRawById": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/deleteProductRawsByIds": {
       "post": {
         "description": "",
         "responses": {
@@ -100,6 +165,84 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/scheduleDemo": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contactUsEmail": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/subscribeEmail": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/getContactUsList": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/getScheduleDemoList": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/getSubscriberEmailList": {
+      "post": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
