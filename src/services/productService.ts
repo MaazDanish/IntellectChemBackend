@@ -61,6 +61,12 @@ class ProductManagement {
 				{ new: true }
 			);
 
+			if (!updatedProduct) {
+				productDTO.data = [];
+				productDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_NOT_FOUND);
+				return productDTO;
+			}
+
 			productDTO.data = updatedProduct;
 			return productDTO;
 		} catch (error: any) {
