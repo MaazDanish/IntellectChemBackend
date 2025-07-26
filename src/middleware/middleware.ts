@@ -20,6 +20,7 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
                 userId: (decoded as JwtPayload).userId,
                 emailId: (decoded as JwtPayload).emailId,
                 mobileNumber: (decoded as JwtPayload).mobileNumber,
+                isAdmin: (decoded as JwtPayload).isAdmin
             };
 
             req.body = { ...req.body, auth_token };

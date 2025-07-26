@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import CommonRequestModel from "./common/commonRequestModel.js";
 
 export class LeadDetailsModelDTO extends BaseResponse {
-    public filterModel: CommonRequestModel | undefined;
+  public filterModel: CommonRequestModel | undefined;
 }
 
 export interface LeadDetails extends Document {
@@ -32,6 +32,7 @@ const LeadDetailsSchema: Schema = new Schema(
   },
   {
     timestamps: true, // adds createdAt and updatedAt
+    collection: 'lead_details'
   }
 );
 

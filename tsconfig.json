@@ -5,6 +5,8 @@
     "moduleResolution": "node", // ✅ Required for ESModules
     "resolveJsonModule": true, // ✅ For importing JSON
     "esModuleInterop": true,
+    "allowImportingTsExtensions": true, // ✅ Add this
+    "noEmit": true, // ✅ Optional for ts-node to avoid writing files
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

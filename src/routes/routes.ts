@@ -18,7 +18,7 @@ const routes = express.Router();
 
 
 // User routes
-routes.post('/getUsers', authMiddleware, getUsers);
+routes.post('/getUsersList', authMiddleware, getUsers);
 routes.post('/addEditUser', authMiddleware, addEditUser);
 routes.post('/signIN', UserValidations.signInValidation, signIN);
 routes.post('/signUP', UserValidations.signUpValidation, signUP);
@@ -32,7 +32,7 @@ routes.post('/getProductList', authMiddleware, getList);
 routes.post('/editProductById', authMiddleware, editProductById);
 routes.post('/getSpecificRawById', authMiddleware, getSpecificRawById);
 routes.post('/deleteProductRawsByIds', authMiddleware, deleteProductRawsByIds);
-routes.post('/uploadExcel', upload.single("file"), authMiddleware, excelUpload);
+routes.post('/uploadProductExcel', upload.single("file"), authMiddleware, excelUpload);
 
 
 // auto read data 

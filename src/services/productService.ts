@@ -4,18 +4,19 @@ import CommonUtils from "../utils/common.js";
 import { eReturnCodes } from "../enums/commonEnums.js";
 import RequestModel from "../models/common/requestModel.js";
 import ProductMaster, { CommonModelDTO } from "../models/productMaster.js";
+import CommonRequestModel from '../models/common/commonRequestModel.js';
 
 
 class ProductManagement {
-	
+
 	public async getList(req: RequestModel): Promise<CommonModelDTO> {
 		const productDTO: CommonModelDTO = new CommonModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
-		const currentPage = req?.data?.currentPage ? parseInt(req.data.currentPage) : 1;
-		const pageSize = req?.data?.pageSize ? parseInt(req.data.pageSize) : 100; // Default 100 per page
-		const skip = (currentPage - 1) * pageSize;
+		const filterModel: CommonRequestModel = { ...req.data };
+		const offset = (filterModel.currentPage - 1) * filterModel.pageSize;
+		const limit = filterModel.pageSize;
 		const searchValue = req?.data?.searchText;
 		let filter: any = {};
 
@@ -28,13 +29,14 @@ class ProductManagement {
 
 			const totalRecords = await ProductMaster.countDocuments(filter);
 			const productList = await ProductMaster.find(filter)
-				.limit(pageSize)
-				.skip(skip);
-
-			console.log("productList", productList.length);
+				.limit(limit)
+				.skip(offset);
 
 
-			productDTO.data = { productList, totalRecords };
+			filterModel.totalRows = totalRecords;
+			filterModel.filterRowsCount = productList.length;
+			productDTO.filterModel = filterModel;
+			productDTO.data = productList;
 			return productDTO;
 		} catch (error: any) {
 			logger.info(error.message)
@@ -88,6 +90,11 @@ class ProductManagement {
 				}
 			}
 
+			if (deletedProducts.length === 0) {
+				productDTO.data = [];
+				productDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_NOT_FOUND);
+				return productDTO;
+			}
 
 			productDTO.data = deletedProducts;
 			return productDTO;
@@ -111,6 +118,12 @@ class ProductManagement {
 
 			const product = await ProductMaster.findById(id);
 
+			if (!product) {
+				productDTO.data = [];
+				productDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_NOT_FOUND);
+				return productDTO;
+			}
+
 			productDTO.data = product;
 			return productDTO;
 		} catch (error: any) {
@@ -128,17 +141,18 @@ class ProductManagement {
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
-		// const userId = req.auth_token.userId;
 		const buffer = reqFile.buffer;
 		const userId = req.body.auth_token.userId;
-
 
 		try {
 
 			const workbook = XLSX.read(buffer, { type: 'buffer' });
+
+
 			const sheetName = workbook.SheetNames[0];
 			const worksheet = workbook.Sheets[sheetName];
 			const data = XLSX.utils.sheet_to_json(worksheet);
+
 
 			const addedData = await ProductManagement.addToDatabase(data, userId);
 
@@ -158,6 +172,10 @@ class ProductManagement {
 		try {
 
 			for (let i = 0; i < data.length; i++) {
+
+				if (i == 100) {
+					break; // Limit to 100 records
+				}
 
 				newData.push({
 					type: data[i].Type,

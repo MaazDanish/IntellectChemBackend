@@ -17,6 +17,7 @@ export type TResponse = {
 
 export type TAuthorizationModel = {
     userId: number;
+    isAdmin: number;
     emailId: string;
     mobileNumber: string;
 };

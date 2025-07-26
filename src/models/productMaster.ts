@@ -80,7 +80,10 @@ const ProductMasterSchema: Schema = new Schema(
     createdon: { type: Date, required: false },
     createdby: { type: String, required: false },
   },
-  { timestamps: true }
+  {
+    timestamps: false,
+    collection: "product_master"
+  }
 );
 
 

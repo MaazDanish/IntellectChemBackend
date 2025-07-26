@@ -9,26 +9,27 @@ export class UserUsageModelDTO extends BaseResponse {
 
 
 export interface IUserUsageMaster extends Document {
-    userId: number;
+    userId: string;
     totalSearch: number;
     usedSearch: number,
     remainingSearch: number;
     totalPages: number;
     totalRowsToDownload: number;
+    isActive: number;
     createdOn: Date;
-    createdBy?: number;
+    createdBy?: string | null;
     updatedOn?: Date | null;
-    updatedBy?: number;
+    updatedBy?: string | null;
     isDeleted: number;
     deletedOn?: Date | null;
-    deletedBy?: number;
+    deletedBy?: string | null;
 }
 
 
 const UserUsageSchema = new Schema<IUserUsageMaster>(
     {
         userId: {
-            type: Number,
+            type: String,
             required: true,
             alias: "user_id",
         },
@@ -62,6 +63,12 @@ const UserUsageSchema = new Schema<IUserUsageMaster>(
             alias: "total_rows_to_download",
             default: 100
         },
+        isActive: {
+            type: Number,
+            required: true,
+            alias: "is_active",
+            default: 1
+        },
         createdOn: {
             type: Date,
             required: true,
@@ -69,7 +76,7 @@ const UserUsageSchema = new Schema<IUserUsageMaster>(
             alias: "created_on",
         },
         createdBy: {
-            type: Number,
+            type: String,
             default: null,
             alias: "created_by",
         },
@@ -79,7 +86,7 @@ const UserUsageSchema = new Schema<IUserUsageMaster>(
             alias: "updated_on",
         },
         updatedBy: {
-            type: Number,
+            type: String,
             default: null,
             alias: "updated_by",
         },
@@ -95,14 +102,14 @@ const UserUsageSchema = new Schema<IUserUsageMaster>(
             alias: "deleted_on",
         },
         deletedBy: {
-            type: Number,
+            type: String,
             default: null,
             alias: "deleted_by",
         },
     },
     {
         timestamps: false,
-        collection: "user_privileges_mapping",
+        collection: "user_usage", // 👈 force MongoDB to use this collection name
     }
 );
 
