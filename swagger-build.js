@@ -18,7 +18,7 @@ const formatDate = () => {
 
 const doc = {
   info: {
-    title: "SALON API",
+    title: "INTELLECTCHEM API",
     description: "Generated on " + formatDate(),
   },
   host: "https://intellectchembackend.onrender.com",

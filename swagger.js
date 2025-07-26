@@ -1,3 +1,6 @@
+import swaggerAutogenFn from 'swagger-autogen';
+const swaggerAutogen = swaggerAutogenFn();
+
 const formatDateIST = () => {
   const date = new Date();
 
@@ -14,8 +17,6 @@ const formatDateIST = () => {
   return `${day} ${month} ${year} ${hours}:${minutes}:${seconds}`;
 };
 
-import swaggerAutogenFn from 'swagger-autogen';
-const swaggerAutogen = swaggerAutogenFn();
 const doc = {
   info: {
     title: "IntellectChem API's",

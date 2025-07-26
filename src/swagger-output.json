@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "IntellectChem API's",
-    "description": "Generated on 19 Jul 2025 17:49:10",
+    "description": "Generated on 26 Jul 2025 21:32:46",
     "version": "1.0.0"
   },
   "host": "localhost:4444",
@@ -16,7 +16,7 @@
   "schemes": [],
   "securityDefinitions": {},
   "paths": {
-    "/getUsers": {
+    "/getUsersList": {
       "post": {
         "description": "",
         "responses": {
@@ -146,7 +146,7 @@
         }
       }
     },
-    "/uploadExcel": {
+    "/uploadProductExcel": {
       "post": {
         "description": "",
         "responses": {
