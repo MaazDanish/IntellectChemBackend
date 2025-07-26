@@ -1,26 +1,26 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUserPrivilegesMapping extends Document {
-    userId: number;
-    privilegeId: number;
+    userId: string;
+    privilegeId: string;
     createdOn: Date;
-    createdBy?: number;
+    createdBy?: string;
     updatedOn?: Date | null;
-    updatedBy?: number;
+    updatedBy?: string;
     isDeleted: number;
     deletedOn?: Date | null;
-    deletedBy?: number;
+    deletedBy?: string;
 }
 
 const UserPrivilegesMappingSchema = new Schema<IUserPrivilegesMapping>(
     {
         userId: {
-            type: Number,
+            type: String,
             required: true,
             alias: "user_id",
         },
         privilegeId: {
-            type: Number,
+            type: String,
             required: true,
             alias: "privilege_id",
         },
@@ -31,7 +31,7 @@ const UserPrivilegesMappingSchema = new Schema<IUserPrivilegesMapping>(
             alias: "created_on",
         },
         createdBy: {
-            type: Number,
+            type: String,
             default: null,
             alias: "created_by",
         },
@@ -41,7 +41,7 @@ const UserPrivilegesMappingSchema = new Schema<IUserPrivilegesMapping>(
             alias: "updated_on",
         },
         updatedBy: {
-            type: Number,
+            type: String,
             default: null,
             alias: "updated_by",
         },
@@ -57,7 +57,7 @@ const UserPrivilegesMappingSchema = new Schema<IUserPrivilegesMapping>(
             alias: "deleted_on",
         },
         deletedBy: {
-            type: Number,
+            type: String,
             default: null,
             alias: "deleted_by",
         },
@@ -68,8 +68,6 @@ const UserPrivilegesMappingSchema = new Schema<IUserPrivilegesMapping>(
     }
 );
 
-const UserPrivilegesMapping = mongoose.model<IUserPrivilegesMapping>(
-    "UserPrivilegesMapping", UserPrivilegesMappingSchema
-);
+const UserPrivilegesMapping = mongoose.model<IUserPrivilegesMapping>("UserPrivilegesMapping", UserPrivilegesMappingSchema);
 
 export default UserPrivilegesMapping;

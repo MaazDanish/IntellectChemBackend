@@ -1,5 +1,10 @@
 import * as fs from "fs";
 import * as path from "path";
+import { fileURLToPath } from "url";
+
+// Simulate __dirname in ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * Ensures that a directory exists for the current date.
@@ -11,9 +16,8 @@ export function getLogDirectory(): string {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
 
-  const logDir = path.join(__dirname, "..", "..", "logs", day + "-" + month + "-" + year.toString());
+  const logDir = path.join(__dirname, "..", "..", "logs", `${day}-${month}-${year}`);
 
-  // Create the directory structure if it doesn't exist
   if (!fs.existsSync(logDir)) {
     fs.mkdirSync(logDir, { recursive: true });
   }

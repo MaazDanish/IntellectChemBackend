@@ -16,7 +16,10 @@ const ChemicalCompoundSchema: Schema = new Schema(
     properties: { type: String, required: true },
     casNumber: { type: String, required: true, unique: true },
   },
-  { timestamps: true }
+  {
+    timestamps: false,
+    collection: 'chemical_compound'
+  }
 );
 
 const ChemicalCompound = mongoose.model<IChemicalCompound>("ChemicalCompound", ChemicalCompoundSchema);

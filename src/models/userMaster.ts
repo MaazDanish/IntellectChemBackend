@@ -1,6 +1,6 @@
-import BaseResponse from "./common/baseResponse";
+import BaseResponse from "./common/baseResponse.js";
 import mongoose, { Schema, Document } from "mongoose";
-import CommonRequestModel from "./common/commonRequestModel";
+import CommonRequestModel from "./common/commonRequestModel.js";
 
 
 export class UserMasterModelDTO extends BaseResponse {
@@ -22,6 +22,7 @@ export interface IUserMaster extends Document {
     districtId?: number;
     pinCode: string;
     gender: number;
+    isAdmin: number;
 }
 
 
@@ -97,9 +98,16 @@ const UserMasterSchema = new Schema<IUserMaster>(
             required: true,
             default: 1,
         },
+        isAdmin: {
+            type: Number,
+            required: true,
+            default: 0,
+            alias: "is_admin",
+        }
     },
     {
-        timestamps: true,
+        timestamps: false,
+        collection: "user_master", // 👈 force MongoDB to use this collection name
     }
 );
 

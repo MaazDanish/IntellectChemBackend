@@ -1,6 +1,5 @@
 import { body } from "express-validator";
-import UserMaster from "../models/userMaster";
-import { log } from "console";
+import UserMaster from "../models/userMaster.js";
 
 const models: Record<string, { model: any; attributes: string[] }> = {
     UserMaster: { model: UserMaster, attributes: ["_id"] },

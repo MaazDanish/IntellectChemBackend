@@ -1,6 +1,6 @@
-import logger from "../logger";
+import logger from "../logger.js";
 import { Request, Response } from "express";
-import ReadDataFromWebService from "../services/readDataFromWebService";
+import ReadDataFromWebService from "../services/readDataFromWebService.js";
 
 
 export const extractDataFromChemSrc = async (req: Request, res: Response): Promise<void> => {

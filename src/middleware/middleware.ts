@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-import { TAuthorizationModel } from "../types/common";
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { TAuthorizationModel } from "../types/common.js";
 import { Request, Response, NextFunction } from "express";
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -9,21 +9,28 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
         res.status(401).send("Authorization header is missing");
         return;
     }
-    const token = authHeader.split(" ")[1];
 
+    const token = authHeader.split(" ")[1];
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!);
 
-        const auth_token: TAuthorizationModel = {
-            userId: decoded.userId,
-            emailId: decoded.emailId,
-            mobileNumber: decoded.mobileNumber,
-        };
+        if (typeof decoded === 'object' && decoded !== null) {
+            const auth_token: TAuthorizationModel = {
+                userId: (decoded as JwtPayload).userId,
+                emailId: (decoded as JwtPayload).emailId,
+                mobileNumber: (decoded as JwtPayload).mobileNumber,
+                isAdmin: (decoded as JwtPayload).isAdmin
+            };
 
-        req.body = { ...req.body, auth_token };
+            req.body = { ...req.body, auth_token };
+        } else {
+            res.status(401).send("Invalid JWT payload format");
+            return;
+        }
+
     } catch (err: any) {
-        res.status(401).send("Invalid jwt Token");
+        res.status(401).send("Invalid JWT token");
         return;
     }
 

@@ -1,4 +1,4 @@
-import { eReturnCodes } from "../../enums/commonEnums";
+import { eReturnCodes } from "../../enums/commonEnums.js";
 
 class ResponseModel {
   public returnCode!: eReturnCodes;

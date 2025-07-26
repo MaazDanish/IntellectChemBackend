@@ -34,7 +34,10 @@ const TableConfigSchema = new Schema<ITableConfig>(
         createdBy: { type: String },
         updatedBy: { type: String },
     },
-    { timestamps: true }
+    {
+        timestamps: false,
+        collection: "table_management", // 👈 force MongoDB to use this collection name
+    }
 );
 
 export const TableManagementModel = mongoose.model<ITableConfig>('TableManagement', TableConfigSchema);

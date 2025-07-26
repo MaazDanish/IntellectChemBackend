@@ -1,4 +1,5 @@
-const swaggerAutogen = require("swagger-autogen")();
+import swaggerAutogenFn from 'swagger-autogen';
+const swaggerAutogen = swaggerAutogenFn();
 
 const formatDate = () => {
   const date = new Date();
@@ -20,7 +21,7 @@ const doc = {
     title: "SALON API",
     description: "Generated on " + formatDate(),
   },
-  host: "salonappbackend.curatedlearn.in",
+  host: "https://intellectchembackend.onrender.com",
   basePath: "/api", // by default: '/'
   schemes: [],      // by default: ['http']
   consumes: [],     // by default: ['application/json']

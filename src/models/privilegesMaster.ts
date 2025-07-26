@@ -1,5 +1,11 @@
 // import CommonUtils from "../../utils/common";
+import BaseResponse from "./common/baseResponse.js";
 import mongoose, { Schema, Document } from "mongoose";
+import CommonRequestModel from "./common/commonRequestModel.js";
+
+export class PrivilegesMasterModelDTO extends BaseResponse {
+    public filterModel: CommonRequestModel | undefined;
+}
 
 export interface IPrivilegesMaster extends Document {
     name: string;
@@ -68,9 +74,5 @@ const PrivilegesMasterSchema = new Schema<IPrivilegesMaster>(
     }
 );
 
-const PrivilegesMaster = mongoose.model<IPrivilegesMaster>(
-    "PrivilegesMaster",
-    PrivilegesMasterSchema
-);
+export const PrivilegesMaster = mongoose.model<IPrivilegesMaster>("PrivilegesMaster", PrivilegesMasterSchema);
 
-export default PrivilegesMaster;

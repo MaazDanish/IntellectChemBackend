@@ -1,4 +1,4 @@
-import { eReturnCodes } from "../enums/commonEnums";
+import { eReturnCodes } from "../enums/commonEnums.js";
 
 export type TRequest = {
     orgId?: number;
@@ -17,6 +17,7 @@ export type TResponse = {
 
 export type TAuthorizationModel = {
     userId: number;
+    isAdmin: number;
     emailId: string;
     mobileNumber: string;
 };

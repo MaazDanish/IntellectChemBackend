@@ -1,5 +1,5 @@
 import { body } from "express-validator";
-import CommonValidations from "./commonValidations";
+import CommonValidations from "./commonValidations.js";
 
 class UserValidations {
   public static signInValidation = [
@@ -43,15 +43,7 @@ class UserValidations {
     body("data.companyName")
       .notEmpty()
       .withMessage("Company Name is Required")
-      .custom(async (value, { req }) => {
-        const id = req?.data?.id;
-
-        const existingData: any = await CommonValidations.getDataByFieldValidations("UserMaster", "companyName", value);
-
-        if (existingData) {
-          return Promise.reject("Company Name Already Exists");
-        }
-      }),
+      
   ];
 }
 export default UserValidations;

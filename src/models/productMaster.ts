@@ -1,6 +1,6 @@
-import BaseResponse from "./common/baseResponse";
+import BaseResponse from "./common/baseResponse.js";
 import mongoose, { Schema, Document } from "mongoose";
-import CommonRequestModel from "./common/commonRequestModel";
+import CommonRequestModel from "./common/commonRequestModel.js";
 
 export class CommonModelDTO extends BaseResponse {
   public filterModel: CommonRequestModel | undefined;
@@ -80,7 +80,10 @@ const ProductMasterSchema: Schema = new Schema(
     createdon: { type: Date, required: false },
     createdby: { type: String, required: false },
   },
-  { timestamps: true }
+  {
+    timestamps: false,
+    collection: "product_master"
+  }
 );
 
 

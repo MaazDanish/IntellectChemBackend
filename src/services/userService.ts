@@ -1,14 +1,17 @@
 import dotenv from "dotenv";
-import logger from "../logger";
 import jwt from "jsonwebtoken";
-import CommonUtils from "../utils/common";
-import EncryptUtils from "../utils/encrypt";
-import { eReturnCodes } from "../enums/commonEnums";
-import RequestModel from "../models/common/requestModel";
-import UserPrivilegesMapping from "../models/userPrivilegesMapping";
-import UserMaster, { UserMasterModelDTO } from "../models/userMaster";
-import { CommonModelDTO } from "../models/productMaster";
-import UsersUsage from "../models/userUsageModel";
+import logger from "../logger.js";
+import CommonUtils from "../utils/common.js";
+import EncryptUtils from "../utils/encrypt.js";
+import UsersUsage from "../models/userUsageModel.js";
+import { eReturnCodes } from "../enums/commonEnums.js";
+import { TAuthorizationModel } from "../types/common.js";
+import RequestModel from "../models/common/requestModel.js";
+import { CommonModelDTO } from "../models/productMaster.js";
+import { PrivilegesMaster } from "../models/privilegesMaster.js";
+import UserPrivilegesMapping from "../models/userPrivilegesMapping.js";
+import CommonRequestModel from "../models/common/commonRequestModel.js";
+import UserMaster, { UserMasterModelDTO } from "../models/userMaster.js";
 
 dotenv.config();
 
@@ -25,17 +28,14 @@ class UserManagement {
 		);
 
 		const { id, privilegesIds, ...userData } = req.data;
-		let userId = 0;
+		let userId: number;
+		let user: any;
 
 		try {
-
-			console.log(id, userData, "====");
-			let user;
-
 			if (!id) {
 				// Create new user
 				user = await UserMaster.create(userData);
-				userId = user.id
+				userId = user.id;
 			} else {
 				// Update existing user
 				user = await UserMaster.findByIdAndUpdate(
@@ -45,7 +45,7 @@ class UserManagement {
 						new: true,
 						runValidators: true
 					}
-				).lean();
+				);
 
 				if (!user) {
 					userDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_NOT_FOUND);
@@ -53,22 +53,45 @@ class UserManagement {
 					return userDTO;
 				}
 
-				await UserPrivilegesMapping.deleteMany({
-					userId: id
-				})
-
-				userId = id
-
+				userId = id;
 			}
 
-			if (privilegesIds.length) {
-				privilegesIds.map((privilege: any) => ({
-					userId: userId,
-					privilegeId: privilege,
+			if (req.data.isAdmin === 1) {
+				if (privilegesIds?.length) {
+					await UserPrivilegesMapping.deleteMany({ userId });
+
+					const bulkData = privilegesIds.map((privilegeId: any) => ({
+						userId,
+						privilegeId,
+						createdBy: req.auth_token.userId,
+					}));
+
+					await UserPrivilegesMapping.insertMany(bulkData);
+				}
+			} else {
+				// isAdmin === 0
+				const usagePayload = {
+					userId,
 					createdBy: req.auth_token.userId,
-				}));
-			}
+					isActive: 1,
+					totalSearch: req.data.totalSearch || 15,
+					remainingSearch: req.data.totalSearch || 15,
+					usedSearch: req.data.usedSearch || 0,
+					totalPages: req.data.totalPages || 5,
+					totalRowsToDownload: req.data.totalRowsToDownload || 100,
+					createdOn: new Date(),
+				};
 
+				if (!id) {
+					await UsersUsage.create(usagePayload);
+				} else {
+					await UsersUsage.findOneAndUpdate(
+						{ userId, isActive: 1 },
+						{ $set: usagePayload },
+						{ new: true, upsert: true }
+					);
+				}
+			}
 
 			userDTO.data = user;
 			return userDTO;
@@ -77,32 +100,6 @@ class UserManagement {
 			userDTO.data = [];
 			userDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_DB_ERROR);
 			return userDTO;
-		}
-	}
-
-	public async editUserUsage(req: RequestModel): Promise<CommonModelDTO> {
-		const commonDTO: CommonModelDTO = new CommonModelDTO(
-			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
-		);
-
-		const { userId, ...updateData } = req.data;
-
-		try {
-
-			const updatedUserUsage = await UsersUsage.findOneAndUpdate(
-				{ userId: userId },
-				updateData,
-				{ new: true }
-			);
-
-
-			commonDTO.data = updatedUserUsage;
-			return Promise.resolve(commonDTO);
-		} catch (error: any) {
-			logger.error(`Error occurred in editUserUsage API in UserService: ${error.message}`);
-			commonDTO.data = null;
-			commonDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_DB_ERROR);
-			return Promise.resolve(commonDTO);
 		}
 	}
 
@@ -117,22 +114,43 @@ class UserManagement {
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
+		const filterModel: CommonRequestModel = { ...req.data };
+		const offset = (filterModel.currentPage - 1) * filterModel.pageSize;
+		const limit = filterModel.pageSize;
 		const filter: any = {};
 
 		try {
 
-			if (req?.data?.searchText) {
-				const regex = { $regex: req.data.searchText, $options: 'i' };
+			if (filterModel.searchText) {
+				const regex = { $regex: filterModel.searchText, $options: 'i' };
 				filter.$or = [
 					{ fullName: regex },
-					{ mobileNumber: regex }
+					{ mobileNumber: regex },
+					{ companyName: regex },
 				];
 			}
 
-			// Find all the users in the system
-			const userList = await UserMaster.find(filter);
+			if (filterModel.isAdmin == 1) {
+				filter.isAdmin = 1;
+			}
 
-			if (!userList) {
+			if (filterModel.isAdmin == 0) {
+				filter.isAdmin = 0;
+			}
+
+			if (filterModel.companyName) {
+				const regex = { $regex: filterModel.companyName, $options: 'i' };
+				filter.companyName = regex;
+			}
+
+
+			const userList = await UserMaster.find(filter)
+				.skip(offset)
+				.limit(limit);
+
+			const totalCount = await UserMaster.countDocuments(filter);
+
+			if (!userList || userList.length === 0) {
 				userDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_NOT_FOUND);
 				userDTO.data = null;
 				return userDTO;
@@ -141,6 +159,9 @@ class UserManagement {
 
 
 			userDTO.data = userList;
+			filterModel.totalRows = totalCount;
+			filterModel.filterRowsCount = userList.length;
+			userDTO.filterModel = filterModel;
 			return userDTO;
 		} catch (error: any) {
 			logger.info(`Error Occured in getUsers API in userservice ${error.message}`);
@@ -212,6 +233,7 @@ class UserManagement {
 			// Find the user with the given id
 			const specifcUser = await UserMaster.findById(id);
 
+
 			// Check if the user is found
 			if (!specifcUser) {
 				userDTO.data = [];
@@ -219,8 +241,29 @@ class UserManagement {
 				return userDTO;
 			}
 
+
+			if (specifcUser.isAdmin == 1) {
+				const privileges = await UserPrivilegesMapping.find(
+					{ userId: id },
+					'privilegeId -_id' // exclude _id field
+				);
+
+				const privilegeIds = privileges.map(p => p.privilegeId);
+
+				const privilegsData = await PrivilegesMaster.find(
+					{ _id: { $in: privilegeIds } },
+					'name privilegeUniqueId -_id' // projection string (include name & privilegeUniqueId, exclude _id)
+				);
+
+				userDTO.data = { specifcUser, privilegsData };
+
+			} else {
+
+				const userUsageData = await UsersUsage.findOne({ userId: id, isActive: 1 });
+				userDTO.data = { specifcUser, userUsageData };
+			}
+
 			// Return the user data
-			userDTO.data = specifcUser;
 			return userDTO;
 		} catch (error: any) {
 			logger.info(error.message);
@@ -246,10 +289,22 @@ class UserManagement {
 
 		try {
 
-
-
 			// Create a new user document
 			const newUser = await UserMaster.create(data);
+
+			const usagePayload = {
+				userId: newUser._id,
+				createdBy: req.auth_token.userId,
+				isActive: 1,
+				totalSearch: req.data.totalSearch || 15,
+				remainingSearch: req.data.totalSearch || 15,
+				usedSearch: req.data.usedSearch || 0,
+				totalPages: req.data.totalPages || 5,
+				totalRowsToDownload: req.data.totalRowsToDownload || 100,
+				createdOn: new Date(),
+			};
+
+			await UsersUsage.create(usagePayload);
 
 			// Send a sign up email to the user
 			const emailPurpose: any = {
@@ -301,17 +356,18 @@ class UserManagement {
 				return userDTO;
 			}
 
-			const data: any = {
+			const data: TAuthorizationModel = {
 				// Prepare the data for JWT token
-				userId: isUser._id,
+				userId: isUser._id as number,
 				emailId: isUser.emailId,
 				mobileNumber: isUser.mobileNumber,
+				isAdmin: isUser.isAdmin
 			};
 
 			const token = jwt.sign(data, process.env.JWT_SECRET_KEY!, { expiresIn: "5h", });
 
 			// Return the user ID and JWT token
-			userDTO.data = { id: isUser._id, token };
+			userDTO.data = { id: isUser._id, isAdmin: isUser.isAdmin, token };
 			return userDTO;
 		} catch (error: any) {
 			logger.info(error.message);

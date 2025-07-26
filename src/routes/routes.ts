@@ -1,11 +1,11 @@
 import multer from "multer";
 import express from "express";
-import authMiddleware from "../middleware/middleware";
-import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById } from '../controllers/productController';
-import { extractDataFromChemSrc } from "../controllers/autoReadDataController";
-import { addEditUser, editUserDetails, getSpecificUser, getUsers, signIN, signUP } from "../controllers/userController";
-import UserValidations from "../validations/userValidation";
-import { contactUsEmail, getContactUsList, getScheduleDemoList, getSubscriberEmailList, scheduleDemo, subscribeEmail } from "../controllers/emailController";
+import authMiddleware from "../middleware/middleware.js";
+import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById } from '../controllers/productController.js';
+import { extractDataFromChemSrc } from "../controllers/autoReadDataController.js";
+import { addEditUser, editUserDetails, getSpecificUser, getUsers, signIN, signUP } from "../controllers/userController.js";
+import UserValidations from "../validations/userValidation.js";
+import { contactUsEmail, getContactUsList, getScheduleDemoList, getSubscriberEmailList, scheduleDemo, subscribeEmail } from "../controllers/emailController.js";
 
 
 
@@ -18,7 +18,7 @@ const routes = express.Router();
 
 
 // User routes
-routes.post('/getUsers', authMiddleware, getUsers);
+routes.post('/getUsersList', authMiddleware, getUsers);
 routes.post('/addEditUser', authMiddleware, addEditUser);
 routes.post('/signIN', UserValidations.signInValidation, signIN);
 routes.post('/signUP', UserValidations.signUpValidation, signUP);
@@ -32,7 +32,7 @@ routes.post('/getProductList', authMiddleware, getList);
 routes.post('/editProductById', authMiddleware, editProductById);
 routes.post('/getSpecificRawById', authMiddleware, getSpecificRawById);
 routes.post('/deleteProductRawsByIds', authMiddleware, deleteProductRawsByIds);
-routes.post('/uploadExcel', upload.single("file"), authMiddleware, excelUpload);
+routes.post('/uploadProductExcel', upload.single("file"), authMiddleware, excelUpload);
 
 
 // auto read data 

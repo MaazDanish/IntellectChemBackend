@@ -1,6 +1,6 @@
-import logger from "../logger";
+import logger from "../logger.js";
 import { Request, Response } from "express";
-import ProductManagement from "../services/productService";
+import ProductManagement from "../services/productService.js";
 
 
 export const getList = async (req: Request, res: Response): Promise<void> => {
@@ -45,6 +45,7 @@ export const getSpecificRawById = async (req: Request, res: Response): Promise<v
 
 export const excelUpload = async (req: Request, res: Response): Promise<void> => {
   try {
+    
     if (!req.file) {
       throw new Error("No file uploaded");
     }
