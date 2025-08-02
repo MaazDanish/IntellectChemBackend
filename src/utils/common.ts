@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
 import express from "express";
-import sendMail from "./sendEmail.js";
-import EncryptUtils from "./encrypt.js";
+import sendMail from "./sendEmail";
+import EncryptUtils from "./encrypt";
 import multer, { StorageEngine } from "multer";
 import { promises as deletePromises } from 'fs';
-import { eReturnCodes } from "../enums/commonEnums.js";
-import ResponseModel from "../models/common/responseModel.js";
+import { eReturnCodes } from "../enums/commonEnums";
+import ResponseModel from "../models/common/responseModel";
 
 
 class CommonUtils {

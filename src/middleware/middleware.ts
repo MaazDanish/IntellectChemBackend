@@ -1,5 +1,5 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { TAuthorizationModel } from "../types/common.js";
+import jwt from 'jsonwebtoken';
+import { TAuthorizationModel } from "../types/common";
 import { Request, Response, NextFunction } from "express";
 
 const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
@@ -17,10 +17,10 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
 
         if (typeof decoded === 'object' && decoded !== null) {
             const auth_token: TAuthorizationModel = {
-                userId: (decoded as JwtPayload).userId,
-                emailId: (decoded as JwtPayload).emailId,
-                mobileNumber: (decoded as JwtPayload).mobileNumber,
-                isAdmin: (decoded as JwtPayload).isAdmin
+                userId: decoded.userId,
+                emailId: decoded.emailId,
+                mobileNumber: decoded.mobileNumber,
+                isAdmin: decoded.isAdmin
             };
 
             req.body = { ...req.body, auth_token };

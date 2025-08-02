@@ -2,11 +2,9 @@
   "name": "express-template",
   "version": "1.0.0",
   "type": "module",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "swagger": "node ./swagger.js",
-    "swagger-build": "node ./swagger-build.js",
     "start": "node dist/server.js",
     "dev": "nodemon",
     "start-dev": "npm run swagger && npm run dev",
@@ -14,8 +12,8 @@
     "upMigration": "node migration.js up",
     "downMigration": "node migration.js down",
     "refreshMigration": "node migration.js refresh",
-    "build": "tsc && npm run swagger-build"
-  },
+    "build": "tsc"
+  },  
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -1,4 +1,4 @@
-import ResponseModel from "./responseModel.js";
+import ResponseModel from "./responseModel";
 
 class BaseResponse {
     public data?: any;

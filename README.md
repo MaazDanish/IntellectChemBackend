@@ -1,13 +1,62 @@
-# ICMA Backend
-
-APP_NAME= ICMA Backend
-PORT = 3005
-
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=465
-MAIL_USERNAME=
-MAIL_PASSWORD=
-MAIL_ENCRYPTION=ssl
-MAIL_FROM_ADDRESS=
-MAIL_FROM_NAME="${APP_NAME}"
+{
+  "name": "express-template",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/server.js",
+    "dev": "nodemon",
+    "start-dev": "npm run swagger && npm run dev",
+    "addMigration": "node migration.js add migration",
+    "upMigration": "node migration.js up",
+    "downMigration": "node migration.js down",
+    "refreshMigration": "node migration.js refresh",
+    "swagger-build": "node ./swagger-build.js",
+    "swagger": "node ./swagger.js",
+    "build": "tsc && npm run swagger-build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^20.14.2",
+    "@types/node-cron": "^3.0.11",
+    "@types/pg": "^8.11.6",
+    "@types/sequelize": "^4.28.20",
+    "@types/winston": "^2.4.4",
+    "and": "^0.0.3",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.13",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "express-validator": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql-migrations": "^1.0.7",
+    "mysql2": "^3.11.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.14",
+    "nodemon": "^3.1.3",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg": "^8.12.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.3",
+    "sequelize-cli": "^6.6.2",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "winston": "^3.14.1"
+  }
+}

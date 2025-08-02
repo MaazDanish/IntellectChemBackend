@@ -1,6 +1,6 @@
-import BaseResponse from "./common/baseResponse.js";
+import BaseResponse from "./common/baseResponse";
 import mongoose, { Schema, Document } from "mongoose";
-import CommonRequestModel from "./common/commonRequestModel.js";
+import CommonRequestModel from "./common/commonRequestModel";
 
 
 export class UserUsageModelDTO extends BaseResponse {

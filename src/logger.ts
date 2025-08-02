@@ -1,6 +1,6 @@
 import path from "path";
 // Import the utility function
-import { getLogDirectory } from "./utils/getLogDirectory.js";
+import { getLogDirectory } from "./utils/getLogDirectory";
 import { createLogger, format, transports } from "winston";
 
 // Generate the log directory based on the current date

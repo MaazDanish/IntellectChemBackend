@@ -1,22 +1,14 @@
-import mysql from 'mysql2';
-import migration from 'mysql-migrations';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
+require("dotenv").config();
+var mysql = require("mysql2");
+var migration = require("mysql-migrations");
 
-dotenv.config();
-
-// Simulate __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const connection = mysql.createPool({
+var connection = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
 });
 
-migration.init(connection, path.join(__dirname, "src", "migrations"), function () {
-  console.log("✅ Finished running migrations");
+migration.init(connection, __dirname + "/src/migrations", function () {
+  console.log("finished running migrations");
 });

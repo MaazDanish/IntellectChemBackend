@@ -1,8 +1,8 @@
-import logger from "../logger.js";
-import CommonUtils from "../utils/common.js";
+import logger from "../logger";
+import CommonUtils from "../utils/common";
 import { Request, Response } from "express";
-import { eReturnCodes } from "../enums/commonEnums.js";
-import UserManagement from "../services/userService.js";
+import { eReturnCodes } from "../enums/commonEnums";
+import UserManagement from "../services/userService";
 import { validationResult } from "express-validator";
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {

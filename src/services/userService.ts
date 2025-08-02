@@ -1,17 +1,17 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import logger from "../logger.js";
-import CommonUtils from "../utils/common.js";
-import EncryptUtils from "../utils/encrypt.js";
-import UsersUsage from "../models/userUsageModel.js";
-import { eReturnCodes } from "../enums/commonEnums.js";
-import { TAuthorizationModel } from "../types/common.js";
-import RequestModel from "../models/common/requestModel.js";
-import { CommonModelDTO } from "../models/productMaster.js";
-import { PrivilegesMaster } from "../models/privilegesMaster.js";
-import UserPrivilegesMapping from "../models/userPrivilegesMapping.js";
-import CommonRequestModel from "../models/common/commonRequestModel.js";
-import UserMaster, { UserMasterModelDTO } from "../models/userMaster.js";
+import logger from "../logger";
+import CommonUtils from "../utils/common";
+import EncryptUtils from "../utils/encrypt";
+import UsersUsage from "../models/userUsageModel";
+import { eReturnCodes } from "../enums/commonEnums";
+import { TAuthorizationModel } from "../types/common";
+import RequestModel from "../models/common/requestModel";
+import { CommonModelDTO } from "../models/productMaster";
+import { PrivilegesMaster } from "../models/privilegesMaster";
+import UserPrivilegesMapping from "../models/userPrivilegesMapping";
+import CommonRequestModel from "../models/common/commonRequestModel";
+import UserMaster, { UserMasterModelDTO } from "../models/userMaster";
 
 dotenv.config();
 

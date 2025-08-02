@@ -1,7 +1,7 @@
 
-import logger from "../logger.js";
+import logger from "../logger";
 import { Request, Response } from "express";
-import EmailServiceManagement from "../services/emailService.js";
+import EmailServiceManagement from "../services/emailService";
 
 export const scheduleDemo = async (req: Request, res: Response): Promise<void> => {
     try {
