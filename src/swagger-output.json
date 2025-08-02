@@ -1,11 +1,11 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "IntellectChem API's",
-    "description": "Generated on 26 Jul 2025 21:41:20",
+    "title": "My API",
+    "description": "Description",
     "version": "1.0.0"
   },
-  "host": "localhost:4444",
+  "host": "localhost:3005",
   "basePath": "/api",
   "tags": [
     {

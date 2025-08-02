@@ -63,7 +63,7 @@ class ReadDataFromWebService {
                     const html = response.data;
                     const $ = cheerio.load(html as string);
 
-                    $('tr.rowDat').each((index, element) => {
+                    $('tr.rowDat').each((index: any, element: any) => {
                         const name = $(element).find('td:nth-child(1) a').text().trim();
                         const molecularFormula = $(element).find('td:nth-child(2)').text().trim();
                         const properties = $(element).find('td:nth-child(3)').text().trim();
