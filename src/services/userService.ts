@@ -294,7 +294,7 @@ class UserManagement {
 
 			const usagePayload = {
 				userId: newUser._id,
-				createdBy: req.auth_token.userId,
+				createdBy: newUser._id,
 				isActive: 1,
 				totalSearch: req.data.totalSearch || 15,
 				remainingSearch: req.data.totalSearch || 15,
