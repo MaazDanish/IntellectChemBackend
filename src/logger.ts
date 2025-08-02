@@ -1,5 +1,4 @@
 import path from "path";
-// Import the utility function
 import { getLogDirectory } from "./utils/getLogDirectory";
 import { createLogger, format, transports } from "winston";
 
