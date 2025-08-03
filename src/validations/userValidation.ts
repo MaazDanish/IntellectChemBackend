@@ -24,7 +24,7 @@ class UserValidations {
 
         const existingData: any = await CommonValidations.getDataByFieldValidations("UserMaster", "emailId", value);
 
-        if (existingData) {
+        if (existingData && existingData._id != id) {
           return Promise.reject("Email Already Exists");
         }
       }),
@@ -36,14 +36,14 @@ class UserValidations {
 
         const existingData: any = await CommonValidations.getDataByFieldValidations("UserMaster", "mobileNumber", value);
 
-        if (existingData) {
+        if (existingData && existingData._id != id) {
           return Promise.reject("Mobile Number Already Exists");
         }
       }),
     body("data.companyName")
       .notEmpty()
       .withMessage("Company Name is Required")
-      
+
   ];
 }
 export default UserValidations;

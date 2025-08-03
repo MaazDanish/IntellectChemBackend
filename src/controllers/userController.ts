@@ -15,7 +15,15 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
 };
 export const addEditUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    res.json(await UserManagement.addEditUser(req.body));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const data = CommonUtils.getDataResponse(eReturnCodes.R_INVALID_REQUEST);
+      data.description = errors.array()[0].msg;
+      res.status(200).json({ data });
+      return;
+    } else {
+      res.json(await UserManagement.addEditUser(req.body));
+    }
   } catch (err) {
     logger.info((err as Error).message);
     res.status(500);
