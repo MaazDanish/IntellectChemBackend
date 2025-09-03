@@ -1,91 +1,134 @@
 import BaseResponse from "./common/baseResponse";
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Model } from "mongoose";
 import CommonRequestModel from "./common/commonRequestModel";
 
-export class CommonModelDTO extends BaseResponse {
+export class ProductMasterModelDTO extends BaseResponse {
   public filterModel: CommonRequestModel | undefined;
 }
 
-interface IProductMaster extends Document {
-  type?: string;
-  month?: string;
+// 1. Interface
+export interface IProductMaster extends Document {
+  type: number;
+  month: number;
+  year: number;
   portOfLoading?: string;
   modeOfShipment?: string;
   portCode?: string;
+  beNo?: string;
   sbillNo?: number;
   sbillDate?: Date;
-  ritcCode?: string;
+  cush?: string;
+  ritcCode?: number;
+  hsCode?: number;
   itemDescription?: string;
   quantity?: number;
-  uqc?: string;
+  unit?: string;
   unitRateInFC?: number;
   currency?: string;
   unitValueInINR?: number;
   totalValueFC?: number;
   totalFOBValueInINR?: number;
+  totalDutyPaid?: number;
+  chaName?: string;
   invoiceNo?: string;
   portOfDischarge?: string;
-  country?: string;
-  consigneeName?: string;
-  consigneeAddress?: string;
-  consigneeCountry?: string;
+
+
+  importer?: string;
+  importerAddress?: string;
+  importerCityState?: string;
+  importerPinCode?: string;
+  importerPhone?: string;
+  importerMail?: string;
+  importerContactPerson1?: string;
+  importerContactPerson2?: string;
+  importerCountry?: string;
+
+
   iec?: string;
-  exporterName?: string;
+
+
+  exporter?: string;
   exporterAddress?: string;
   exporterCityState?: string;
-  exporterPin?: string;
+  exporterCountry?: string;
+  exporterPinCode?: string;
+  exporterPhone?: string;
+  exporterMail?: string;
   exporterContactPerson1?: string;
   exporterContactPerson2?: string;
+
+
   iecDateOfEstablishment?: Date;
   iecPan?: string;
   chapter?: string;
-  createdon?: Date;
-  createdby?: string;
+  createdOn?: Date;
+  createdBy?: string;
 }
 
-const ProductMasterSchema: Schema = new Schema(
+// 2. Schema with snake_case fields
+const ProductMasterSchema: Schema<IProductMaster> = new Schema(
   {
-    type: { type: String, required: false },
-    month: { type: String, required: false },
-    portOfLoading: { type: String, required: false },
-    modeOfShipment: { type: String, required: false },
-    portCode: { type: String, required: false },
-    sbillNo: { type: Number, required: false },
-    sbillDate: { type: Date, required: false },
-    ritcCode: { type: String, required: false },
-    itemDescription: { type: String, required: false },
-    quantity: { type: Number, required: false },
-    uqc: { type: String, required: false },
-    unitRateInFC: { type: Number, required: false },
-    currency: { type: String, required: false },
-    unitValueInINR: { type: Number, required: false },
-    totalValueFC: { type: Number, required: false },
-    totalFOBValueInINR: { type: Number, required: false },
-    invoiceNo: { type: String, required: false },
-    portOfDischarge: { type: String, required: false },
-    country: { type: String, required: false },
-    consigneeName: { type: String, required: false },
-    consigneeAddress: { type: String, required: false },
-    consigneeCountry: { type: String, required: false },
-    iec: { type: String, required: false },
-    exporterName: { type: String, required: false },
-    exporterAddress: { type: String, required: false },
-    exporterCityState: { type: String, required: false },
-    exporterPin: { type: String, required: false },
-    exporterContactPerson1: { type: String, required: false },
-    exporterContactPerson2: { type: String, required: false },
-    iecDateOfEstablishment: { type: Date, required: false },
-    iecPan: { type: String, required: false },
-    chapter: { type: String, required: false },
-    createdon: { type: Date, required: false },
-    createdby: { type: String, required: false },
+    type: { type: Number, field: "type" },
+    month: { type: Number, field: "month" },
+    year: { type: Number, field: "year" },
+    portOfLoading: { type: String, field: "port_of_loading" },
+    modeOfShipment: { type: String, field: "mode_of_shipment" },
+    portCode: { type: String, field: "port_code" },
+    beNo: { type: String, field: "be_no" },
+    sbillNo: { type: Number, field: "sbill_no" },
+    sbillDate: { type: Date, field: "sbill_date" },
+    cush: { type: String, field: "cush" },
+    ritcCode: { type: Number, field: "ritc_code" },
+    hsCode: { type: Number, field: "hs_code" },
+    itemDescription: { type: String, field: "item_description" },
+    quantity: { type: Number, field: "quantity" },
+    unit: { type: String, field: "unit" },
+    unitRateInFC: { type: Number, field: "unit_rate_in_fc" },
+    currency: { type: String, field: "currency" },
+    unitValueInINR: { type: Number, field: "unit_value_in_inr" },
+    totalValueFC: { type: Number, field: "total_value_fc" },
+    totalFOBValueInINR: { type: Number, field: "total_fob_value_in_inr" },
+    totalDutyPaid: { type: Number, field: "total_duty_paid" },
+    chaName: { type: String, field: "cha_name" },
+    invoiceNo: { type: String, field: "invoice_no" },
+    portOfDischarge: { type: String, field: "port_of_discharge" },
+    importer: { type: String, field: "importer" },
+    importerAddress: { type: String, field: "importer_address" },
+    importerCityState: { type: String, field: "importer_city_state" },
+    importerPinCode: { type: String, field: "importer_pin_code" },
+    importerPhone: { type: String, field: "importer_phone" },
+    importerMail: { type: String, field: "importer_mail" },
+    importerContactPerson1: { type: String, field: "importer_contact_person1" },
+    importerContactPerson2: { type: String, field: "importer_contact_person2" },
+    importerCountry: { type: String, field: "importer_country" },
+    iec: { type: String, field: "iec" },
+    exporter: { type: String, field: "exporter" },
+    exporterAddress: { type: String, field: "exporter_address" },
+    exporterCountry: { type: String, field: "exporter_country" },
+    exporterCityState: { type: String, field: "exporter_city_state" },
+    exporterPinCode: { type: String, field: "exporter_pin_code" },
+    exporterPhone: { type: String, field: "exporter_phone" },
+    exporterMail: { type: String, field: "exporter_mail" },
+    exporterContactPerson1: { type: String, field: "exporter_contact_person1" },
+    exporterContactPerson2: { type: String, field: "exporter_contact_person2" },
+    iecDateOfEstablishment: { type: Date, field: "iec_date_of_establishment" },
+    iecPan: { type: String, field: "iec_pan" },
+    chapter: { type: String, field: "chapter" },
+    createdOn: { type: Date, field: "created_on" },
+    createdBy: { type: String, field: "created_by" },
   },
   {
     timestamps: false,
-    collection: "product_master"
+    collection: "product_master",
   }
 );
 
 
-const ProductMaster = mongoose.model<IProductMaster>("ProductMaster", ProductMasterSchema);
+// 3. Model
+const ProductMaster = mongoose.model<IProductMaster>(
+  "ProductMaster",
+  ProductMasterSchema
+);
+
 export default ProductMaster;

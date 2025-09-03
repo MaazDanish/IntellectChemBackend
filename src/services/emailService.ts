@@ -4,12 +4,12 @@ import sendEmail from "../utils/sendEmail";
 import { TEmailOptions } from "../types/common";
 import LeadDetailsModel from "../models/leadDetails";
 import RequestModel from "../models/common/requestModel";
-import { CommonModelDTO } from "../models/productMaster";
+import { ProductMasterModelDTO } from "../models/productMaster";
 import { eLeadType, eReturnCodes } from "../enums/commonEnums";
 
 class EmailServiceManagement {
-    public async scheduleDemo(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(
+    public async scheduleDemo(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(
             CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
         );
 
@@ -51,8 +51,8 @@ class EmailServiceManagement {
         }
     }
 
-    public async contactUsEmail(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(
+    public async contactUsEmail(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(
             CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
         );
 
@@ -90,8 +90,8 @@ class EmailServiceManagement {
         }
     }
 
-    public async subscribeEmail(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(
+    public async subscribeEmail(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(
             CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
         );
 
@@ -121,8 +121,8 @@ class EmailServiceManagement {
         }
     }
 
-    public async getSubscriberEmailList(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(
+    public async getSubscriberEmailList(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(
             CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
         );
 
@@ -142,8 +142,8 @@ class EmailServiceManagement {
             return dto;
         }
     }
-    public async getScheduleDemoList(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(
+    public async getScheduleDemoList(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(
             CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
         );
 
@@ -163,8 +163,8 @@ class EmailServiceManagement {
             return dto;
         }
     }
-    public async getContactUsList(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(
+    public async getContactUsList(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(
             CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
         );
 

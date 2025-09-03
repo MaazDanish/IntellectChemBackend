@@ -7,7 +7,6 @@ import UsersUsage from "../models/userUsageModel";
 import { eReturnCodes } from "../enums/commonEnums";
 import { TAuthorizationModel } from "../types/common";
 import RequestModel from "../models/common/requestModel";
-import { CommonModelDTO } from "../models/productMaster";
 import { PrivilegesMaster } from "../models/privilegesMaster";
 import UserPrivilegesMapping from "../models/userPrivilegesMapping";
 import CommonRequestModel from "../models/common/commonRequestModel";

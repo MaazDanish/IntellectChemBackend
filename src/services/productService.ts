@@ -1,16 +1,20 @@
 import XLSX from 'xlsx';
+import dayjs from "dayjs";
 import logger from "../logger";
 import CommonUtils from "../utils/common";
-import { eReturnCodes } from "../enums/commonEnums";
 import RequestModel from "../models/common/requestModel";
-import ProductMaster, { CommonModelDTO } from "../models/productMaster";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import CommonRequestModel from '../models/common/commonRequestModel';
+import { eImportExportType, eReturnCodes } from "../enums/commonEnums";
+import ProductMaster, { ProductMasterModelDTO } from "../models/productMaster";
+
+dayjs.extend(customParseFormat);
 
 
 class ProductManagement {
 
-	public async getList(req: RequestModel): Promise<CommonModelDTO> {
-		const productDTO: CommonModelDTO = new CommonModelDTO(
+	public async getList(req: RequestModel): Promise<ProductMasterModelDTO> {
+		const productDTO: ProductMasterModelDTO = new ProductMasterModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
@@ -22,19 +26,68 @@ class ProductManagement {
 
 		try {
 
+			filterModel.totalRows = await ProductMaster.countDocuments();
 
+			// Global Search
 			if (searchValue) {
 				filter["itemDescription"] = { $regex: searchValue, $options: "i" }; // Equivalent to LIKE '%searchText%'
+				filter["importer"] = { $regex: searchValue, $options: "i" }; // Equivalent to LIKE '%searchText%'
+				filter["importerCountry"] = { $regex: searchValue, $options: "i" }; // Equivalent to LIKE '%searchText%'
+				filter["exporter"] = { $regex: searchValue, $options: "i" }; // Equivalent to LIKE '%searchText%'
+				filter["exporterCountry"] = { $regex: searchValue, $options: "i" }; // Equivalent to LIKE '%searchText%'
 			}
 
-			const totalRecords = await ProductMaster.countDocuments(filter);
+
+
+			if (filterModel.importer) {
+				filter["importer"] = { $regex: filterModel.importer, $options: "i" };
+			}
+
+			if (filterModel.importerCountry) {
+				filter["importerCountry"] = { $regex: filterModel.importerCountry, $options: "i" };
+			}
+
+			if (filterModel.exporter) {
+				filter["exporter"] = { $regex: filterModel.exporter, $options: "i" };
+			}
+
+			if (filterModel.exporterCountry) {
+				filter["exporterCountry"] = { $regex: filterModel.exporterCountry, $options: "i" };
+			}
+
+			if (filterModel.type) {
+				filter["type"] = filterModel.type;
+			}
+
+
+			if (filterModel.monthYear) {
+				if (filterModel.monthYear.includes("-")) {
+					let [mon, yr] = filterModel.monthYear.split("-").map((x: string) => x.trim());
+
+					let monthNumber = parseInt(mon, 10);  // e.g. 1 → January
+					let yearNumber = parseInt(yr, 10);    // e.g. 2025
+
+					if (!isNaN(monthNumber) && !isNaN(yearNumber)) {
+						filter["month"] = monthNumber;
+						filter["year"] = yearNumber;
+					}
+				} else {
+					filter["year"] = filterModel.monthYear;
+				}
+			}
+
+
+			if (req?.data?.chapter) {
+				filter["chapter"] = req?.data?.chapter;
+			}
+
+			// Advance Search
+
+			filterModel.filterRowsCount = await ProductMaster.countDocuments(filter);
 			const productList = await ProductMaster.find(filter)
 				.limit(limit)
 				.skip(offset);
 
-
-			filterModel.totalRows = totalRecords;
-			filterModel.filterRowsCount = productList.length;
 			productDTO.filterModel = filterModel;
 			productDTO.data = productList;
 			return productDTO;
@@ -46,8 +99,8 @@ class ProductManagement {
 		}
 	}
 
-	public async editProductById(req: RequestModel): Promise<CommonModelDTO> {
-		const productDTO: CommonModelDTO = new CommonModelDTO(
+	public async editProductById(req: RequestModel): Promise<ProductMasterModelDTO> {
+		const productDTO: ProductMasterModelDTO = new ProductMasterModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
@@ -77,8 +130,8 @@ class ProductManagement {
 		}
 	}
 
-	public async deleteProductRawsByIds(req: RequestModel): Promise<CommonModelDTO> {
-		const productDTO: CommonModelDTO = new CommonModelDTO(
+	public async deleteProductRawsByIds(req: RequestModel): Promise<ProductMasterModelDTO> {
+		const productDTO: ProductMasterModelDTO = new ProductMasterModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
@@ -113,8 +166,8 @@ class ProductManagement {
 	}
 
 
-	public async getSpecificRawById(req: RequestModel): Promise<CommonModelDTO> {
-		const productDTO: CommonModelDTO = new CommonModelDTO(
+	public async getSpecificRawById(req: RequestModel): Promise<ProductMasterModelDTO> {
+		const productDTO: ProductMasterModelDTO = new ProductMasterModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
@@ -141,9 +194,9 @@ class ProductManagement {
 	}
 
 
-	public async uploadExcel(reqFile: any, req: any): Promise<CommonModelDTO> {
+	public async uploadExcel(reqFile: any, req: any): Promise<ProductMasterModelDTO> {
 
-		const productDTO: CommonModelDTO = new CommonModelDTO(
+		const productDTO: ProductMasterModelDTO = new ProductMasterModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
 
@@ -183,40 +236,75 @@ class ProductManagement {
 					break; // Limit to 100 records
 				}
 
+				let type = data[i].TYPE.toLowerCase() == 'export' ? eImportExportType.EXPORT : eImportExportType.IMPORT;
+				// 🔹 Parse month & year (always "Mon--YYYY")
+				let [mon, yr] = (data[i]["MONTH YEAR"] || "").split("--").map((x: string) => x.trim());
+				let monthNumber = dayjs(mon, "MMM").month() + 1; // Jan=0 so +1
+				let yearNumber = parseInt(yr, 10);
+
+				if (!monthNumber || !yearNumber) {
+					continue;
+				}
+
 				newData.push({
-					type: data[i].Type,
-					month: data[i].Month,
-					portOfLoading: data[i]['Port of Loading'],
-					modeOfShipment: data[i]['Mode of Shipment'],
-					portCode: data[i]['Port Code'],
-					sBillNo: data[i]['SBill No'],
-					sBillDate: data[i]['SBill Date'],
-					ritcCode: data[i]['RITC Code'],
-					itemDescription: data[i]['Item Description'],
-					quantity: data[i].Quantity,
-					uqc: data[i].UQC,
-					unitRateInFC: data[i]['Unit Rate in FC'],
-					currency: data[i].Currency,
-					unitValueInINR: data[i]['Unit Value in INR'],
-					totalValueFC: data[i]['Total Value FC'],
-					totalFobValueInINR: data[i]['Total FOB Value in INR'],
-					invoiceNo: data[i]['Invoice No'],
-					portOfDischarge: data[i]['Port of Discharge'],
-					country: data[i].Country,
-					consigneeName: data[i]['Consignee Name'],
-					consigneeAddress: data[i]['Consignee Address'],
-					consigneeCountry: data[i]['Consignee Country'],
-					exporterName: data[i]['Exporter Name'],
-					exporterAddress: data[i]['Exporter Address'],
-					exporterCityState: data[i]['Exporter City State'],
-					exporterPIN: data[i]['Exporter PIN'],
-					exporterContactPerson1: data[i]['Exporter Contact Person 1'],
-					exporterContactPerson2: data[i]['Exporter Contact Person 2'],
-					iecDateOfEstablishment: data[i]['IEC Date of Establishment'],
-					iecPAN: data[i]['IEC PAN'],
-					chapter: data[i].Chapter,
+					type: type,
+					month: monthNumber,
+					year: yearNumber,
+					portOfLoading: data[i]["PORT OF LOADING"],
+					modeOfShipment: data[i]["MODE OF SHIPMENT"],
+					portCode: data[i]["PORT CODE"],
+					beNo: data[i]["BE NO"],
+					sbillNo: data[i]["SBILL NO"],
+					sbillDate: data[i]["SBILL DATE"],
+					cush: data[i]["CUSH"],
+					ritcCode: data[i]["RITC CODE"],
+					hsCode: data[i]["HSCODE"],
+					itemDescription: data[i]["PRODUCT"],
+					quantity: data[i]["QUANTITY"],
+					unit: data[i]["UNIT"],
+					unitRateInFC: data[i]["UNIT RATE IN FC"],
+					currency: data[i]["CURRENCY"],
+					unitValueInINR: data[i]["UNIT VALUE IN INR"],
+					totalValueFC: data[i]["TOTAL VALUE FC"],
+					totalFOBValueInINR: data[i]["TOTAL FOB VALUE IN INR"],
+					totalDutyPaid: data[i]["TOTAL DUTY PAID"],
+					chaName: data[i]["CHA NAME"],
+					invoiceNo: data[i]["INVOICE NO"],
+					portOfDischarge: data[i]["PORT OF DISCHARGE"],
+
+					// ✅ Importer columns
+					importer: data[i]["IMPORTER"],
+					importerAddress: data[i]["IMPORTER ADDRESS"],
+					importerCityState: data[i]["IMPORTER CITY STATE"],
+					importerPinCode: data[i]["IMPORTER PIN"],
+					importerPhone: data[i]["IMPORTER PHONE"],
+					importerMail: data[i]["IMPORTER MAIL"],
+					importerContactPerson1: data[i]["IMPORTER CONTACT PERSON 1"],
+					importerContactPerson2: data[i]["IMPORTER CONTACT PERSON 2"],
+					importerCountry: data[i]["IMPORTER COUNTRY"],
+
+					// ✅ IEC
+					iec: data[i]["IEC"],
+
+					// ✅ Exporter columns
+					exporter: data[i]["EXPORTER"],
+					exporterCountry: data[i]["EXPORTER COUNTRY"],
+					exporterAddress: data[i]["EXPORTER ADDRESS"],
+					exporterCityState: data[i]["EXPORTER CITY STATE"],
+					exporterPinCode: data[i]["EXPORTER PIN"],
+					exporterPhone: data[i]["EXPORTER PHONE"],
+					exporterMail: data[i]["EXPORTER MAIL"],
+					exporterContactPerson1: data[i]["EXPORTER CONTACT PERSON 1"],
+					exporterContactPerson2: data[i]["EXPORTER CONTACT PERSON 2"],
+
+					// ✅ Other fields
+					iecDateOfEstablishment: data[i]["IEC DATE OF ESTABLISHMENT"],
+					iecPan: data[i]["IEC PAN"],
+					chapter: data[i]["CHAPTER"],
+
+					// audit
 					createdon: new Date(),
-					createdby: userId
+					createdby: userId,
 				});
 			}
 

@@ -4,13 +4,13 @@ import * as cheerio from "cheerio";
 import CommonUtils from "../utils/common";
 import { eReturnCodes } from "../enums/commonEnums";
 import RequestModel from "../models/common/requestModel";
-import { CommonModelDTO } from "../models/productMaster";
+import { ProductMasterModelDTO } from "../models/productMaster";
 import ChemicalCompound from "../models/chemicalCompound";
 
 
 class ReadDataFromWebService {
-    public async extractDataFromChemSrc(req: RequestModel): Promise<CommonModelDTO> {
-        const dto: CommonModelDTO = new CommonModelDTO(CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS));
+    public async extractDataFromChemSrc(req: RequestModel): Promise<ProductMasterModelDTO> {
+        const dto: ProductMasterModelDTO = new ProductMasterModelDTO(CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS));
 
         const extractedData: any = [];
 

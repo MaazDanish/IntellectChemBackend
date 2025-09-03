@@ -38,3 +38,9 @@ export enum eLeadType {
   CONTACT_US = 2,
   SUBSCRIBE = 3
 }
+
+
+export enum eImportExportType {
+  IMPORT = 1,
+  EXPORT = 2
+}
