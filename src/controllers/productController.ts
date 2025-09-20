@@ -41,11 +41,19 @@ export const getSpecificRawById = async (req: Request, res: Response): Promise<v
     res.status(500);
   }
 };
+export const storeSynonymData = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.json(await ProductManagement.storeSynonymData(req.body));
+  } catch (err) {
+    logger.info((err as Error).message);
+    res.status(500);
+  }
+};
 
 
 export const excelUpload = async (req: Request, res: Response): Promise<void> => {
   try {
-    
+
     if (!req.file) {
       throw new Error("No file uploaded");
     }

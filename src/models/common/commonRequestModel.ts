@@ -18,6 +18,7 @@ class CommonRequestModel {
   public exporter!: string;
   public exporterCountry!: string;
   public type!: number;
+  public searchType!: number;
   constructor() {
     this.fromDate = new Date();
     this.toDate = new Date();
@@ -38,6 +39,7 @@ class CommonRequestModel {
     this.exporter = "";
     this.exporterCountry = "";
     this.type = 0;
+    this.searchType = 0;
   }
 }
 export default CommonRequestModel;

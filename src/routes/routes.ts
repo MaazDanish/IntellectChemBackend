@@ -4,7 +4,7 @@ import authMiddleware from "../middleware/middleware";
 import UserValidations from "../validations/userValidation";
 import { extractDataFromChemSrc } from "../controllers/autoReadDataController";
 import { addEditUser, editUserDetails, getSpecificUser, getUsers, signIN, signUP } from "../controllers/userController";
-import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById } from '../controllers/productController';
+import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById, storeSynonymData } from '../controllers/productController';
 import { contactUsEmail, getContactUsList, getScheduleDemoList, getSubscriberEmailList, scheduleDemo, subscribeEmail } from "../controllers/emailController";
 
 const storage = multer.memoryStorage();
@@ -24,6 +24,7 @@ routes.post('/getSpecificUser', authMiddleware, getSpecificUser);
 // product routes
 routes.post('/getProductList', authMiddleware, getList);
 routes.post('/editProductById', authMiddleware, editProductById);
+routes.post('/storeSynonymData', authMiddleware, storeSynonymData);
 routes.post('/getSpecificRawById', authMiddleware, getSpecificRawById);
 routes.post('/deleteProductRawsByIds', authMiddleware, deleteProductRawsByIds);
 routes.post('/uploadProductExcel', upload.single("file"), authMiddleware, excelUpload);

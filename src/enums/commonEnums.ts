@@ -44,3 +44,10 @@ export enum eImportExportType {
   IMPORT = 1,
   EXPORT = 2
 }
+
+export enum eSearchType {
+  SIMPLE_SEARCH = 1,
+  ADVANCED_SEARCH = 2,
+  SYNONYM_SEARCH = 3,
+  CAS_NUMBER_SEARCH = 4
+}
