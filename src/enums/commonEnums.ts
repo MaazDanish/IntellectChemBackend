@@ -51,3 +51,7 @@ export enum eSearchType {
   SYNONYM_SEARCH = 3,
   CAS_NUMBER_SEARCH = 4
 }
+
+export enum eDatabase {
+  TRADE_ANALYTICS = 1
+}

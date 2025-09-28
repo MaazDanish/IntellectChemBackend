@@ -23,6 +23,7 @@ export interface IUserMaster extends Document {
     pinCode: string;
     gender: number;
     isAdmin: number;
+    isActive: number;
 }
 
 
@@ -103,6 +104,12 @@ const UserMasterSchema = new Schema<IUserMaster>(
             required: true,
             default: 0,
             alias: "is_admin",
+        },
+        isActive: {
+            type: Number,
+            required: true,
+            default: 1,
+            alias: "is_active",
         }
     },
     {

@@ -4,8 +4,9 @@ import authMiddleware from "../middleware/middleware";
 import UserValidations from "../validations/userValidation";
 import { extractDataFromChemSrc } from "../controllers/autoReadDataController";
 import { addEditUser, editUserDetails, getSpecificUser, getUsers, signIN, signUP } from "../controllers/userController";
-import { deleteProductRawsByIds, editProductById, excelUpload, getList, getSpecificRawById, storeSynonymData } from '../controllers/productController';
+import { deleteProductRawsByIds, editProductById, excelUpload, getGraphData, getList, getSearchHistory, getSpecificRawById, storeSynonymData } from '../controllers/productController';
 import { contactUsEmail, getContactUsList, getScheduleDemoList, getSubscriberEmailList, scheduleDemo, subscribeEmail } from "../controllers/emailController";
+import ProductValidations from "../validations/productValidation";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -22,7 +23,9 @@ routes.post('/editUserDetails', authMiddleware, editUserDetails);
 routes.post('/getSpecificUser', authMiddleware, getSpecificUser);
 
 // product routes
-routes.post('/getProductList', authMiddleware, getList);
+routes.post('/getProductList', authMiddleware, ProductValidations.getProductListValidations, getList);
+routes.post('/getGraphData', authMiddleware, getGraphData);
+routes.post('/getSearchHistory', authMiddleware, getSearchHistory);
 routes.post('/editProductById', authMiddleware, editProductById);
 routes.post('/storeSynonymData', authMiddleware, storeSynonymData);
 routes.post('/getSpecificRawById', authMiddleware, getSpecificRawById);

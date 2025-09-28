@@ -16,11 +16,13 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!);
 
         if (typeof decoded === 'object' && decoded !== null) {
+
             const auth_token: TAuthorizationModel = {
                 userId: decoded.userId,
                 emailId: decoded.emailId,
                 mobileNumber: decoded.mobileNumber,
-                isAdmin: decoded.isAdmin
+                isAdmin: decoded.isAdmin,
+                fullName: decoded.fullName
             };
 
             req.body = { ...req.body, auth_token };

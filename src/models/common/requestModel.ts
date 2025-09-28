@@ -4,7 +4,9 @@ class RequestModel {
     constructor() {}
   }
   class AuthorizationModel {
-    public userId!: number;
+    public userId!: string;
+    public fullName!: string;
+    public emailId!: string;
     public userName!: string;
     public orgId!: number;
     public isMaster!: number;

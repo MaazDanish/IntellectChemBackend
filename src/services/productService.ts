@@ -4,12 +4,16 @@ import XLSX from 'xlsx';
 import dayjs from "dayjs";
 import logger from "../logger";
 import CommonUtils from "../utils/common";
+import { ISearchHistory } from '../enums/interface';
 import RequestModel from "../models/common/requestModel";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import CommonRequestModel from '../models/common/commonRequestModel';
 import ProductMaster, { ProductMasterModelDTO } from "../models/productMaster";
+import SearchHistory, { SearchHistoryModelDTO } from '../models/searchHistory';
 import SynonymBunch, { SynonymBunchSchemaModelDTO } from '../models/synonymBunches';
-import { eImportExportType, eReturnCodes, eSearchType } from "../enums/commonEnums";
+import { eDatabase, eImportExportType, eReturnCodes, eSearchType } from "../enums/commonEnums";
+import UsersUsage, { UserUsageModelDTO } from '../models/userUsageModel';
+import UserMaster from '../models/userMaster';
 
 dayjs.extend(customParseFormat);
 
@@ -133,32 +137,64 @@ class ProductManagement {
 	// 		return productDTO;
 	// 	}
 	// }
-	public async getList(req: RequestModel): Promise<ProductMasterModelDTO> {
+	public async getList(req: RequestModel, request: any): Promise<ProductMasterModelDTO> {
 		const productDTO: ProductMasterModelDTO = new ProductMasterModelDTO(
 			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
 		)
+
+		const clientIp =
+			request.headers['x-forwarded-for']?.toString().split(',')[0] || // preferred if behind proxy
+			request.socket?._peername?.address ||                             // direct connection
+			request.connection?.remoteAddress ||                              // fallback
+			request.ip;                                                       // express shortcut
+
 
 		const filterModel: CommonRequestModel = { ...req.data };
 		const offset = (filterModel.currentPage - 1) * filterModel.pageSize;
 		const limit = filterModel.pageSize;
 		let filter: any = {};
+		let searchHistory: ISearchHistory = {
+			userId: req.auth_token.userId,
+			fullName: req.auth_token.fullName,
+			emailId: req.auth_token.emailId,
+			searchKeywords: [],
+			ipAddress: clientIp,
+			searchType: eSearchType.SIMPLE_SEARCH,
+			totalRecords: 0,
+			totalFilteredRecords: 0,
+			searchedDatabase: eDatabase.TRADE_ANALYTICS,
+			searchedOn: new Date()
+		};
 		let synonymSearches: string[] = [];
 
 
 		try {
 
 			filterModel.totalRows = await ProductMaster.countDocuments();
+			searchHistory.totalRecords = filterModel.totalRows;
 
 			if (req?.data?.simpleSearch) {
 				filter[req?.data?.simpleSearch?.key] = { $regex: req?.data?.simpleSearch?.value, $options: "i" }; // Equivalent to LIKE '%searchText%'
+				searchHistory.searchKeywords = [{
+					field: req?.data?.simpleSearch?.key,
+					value: req?.data?.simpleSearch?.value
+				}];
+				searchHistory.searchType = eSearchType.SIMPLE_SEARCH;
 			} else if (req?.data?.casNumberFilter) {
 				filter["itemDescription"] = { $regex: req?.data?.casNumberFilter, $options: "i" }; // Equivalent to LIKE '%searchText%'
+				searchHistory.searchKeywords = [{
+					field: "itemDescription",
+					value: req?.data?.casNumberFilter
+				}];
+				searchHistory.searchType = eSearchType.CAS_NUMBER_SEARCH;
 			} else if (req?.data?.advanceFilters && req?.data?.advanceFilters.length > 0) {
-				const advancedFilter = await buildAdvancedFilter(req.data.advanceFilters);
+				const advancedFilter = await buildAdvancedFilter(req.data.advanceFilters, searchHistory);
 				if (advancedFilter) {
 					filter = { ...filter, ...advancedFilter };
 				}
+				searchHistory.searchType = eSearchType.ADVANCED_SEARCH;
 			} else if (req?.data?.synonymSearch) {
+
 				const fil = await SynonymBunch.findOne({
 					synonyms: { $regex: req.data.synonymSearch, $options: "i" },
 				}).select("synonyms -_id"); // only return synonyms field, exclude _id
@@ -166,6 +202,12 @@ class ProductManagement {
 				if (fil) {
 					synonymSearches = fil.synonyms;
 				}
+
+				searchHistory.searchKeywords = [{
+					field: "synonyms",
+					value: req.data.synonymSearch
+				}];
+				searchHistory.searchType = eSearchType.SYNONYM_SEARCH;
 			}
 
 
@@ -224,14 +266,23 @@ class ProductManagement {
 
 
 			filterModel.filterRowsCount = await ProductMaster.countDocuments(filter);
+			searchHistory.totalFilteredRecords = filterModel.filterRowsCount;
+
 			const productList = await ProductMaster.find(filter)
 				.limit(limit)
 				.skip(offset);
+
+			// if user did searchh then do it 
+			if (searchHistory.searchKeywords.length > 0) {
+				await SearchHistory.create(searchHistory);
+			}
 
 			productDTO.filterModel = filterModel;
 			productDTO.data = productList;
 			return productDTO;
 		} catch (error: any) {
+			console.log(error);
+
 			logger.info(error.message)
 			productDTO.data = [];
 			productDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_DB_ERROR);
@@ -499,6 +550,231 @@ class ProductManagement {
 		}
 	}
 
+	public async getGraphData(req: RequestModel): Promise<ProductMasterModelDTO> {
+		const graphData: ProductMasterModelDTO = new ProductMasterModelDTO(CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS));
+
+		let filter: any = {};
+		let synonymSearches: string[] = [];
+
+		try {
+
+
+			if (req?.data?.simpleSearch) {
+				filter[req?.data?.simpleSearch?.key] = { $regex: req?.data?.simpleSearch?.value, $options: "i" }; // Equivalent to LIKE '%searchText%'
+			} else if (req?.data?.casNumberFilter) {
+				filter["itemDescription"] = { $regex: req?.data?.casNumberFilter, $options: "i" }; // Equivalent to LIKE '%searchText%'
+			} else if (req?.data?.advanceFilters && req?.data?.advanceFilters.length > 0) {
+				const advancedFilter = await buildAdvancedFilter(req.data.advanceFilters);
+				if (advancedFilter) {
+					filter = { ...filter, ...advancedFilter };
+				}
+			} else if (req?.data?.synonymSearch) {
+				const fil = await SynonymBunch.findOne({
+					synonyms: { $regex: req.data.synonymSearch, $options: "i" },
+				}).select("synonyms -_id"); // only return synonyms field, exclude _id
+
+				if (fil) {
+					synonymSearches = fil.synonyms;
+				}
+			}
+
+
+			if (req.data.monthYear) {
+				if (req.data.monthYear.includes("-")) {
+					let [mon, yr] = req.data.monthYear.split("-").map((x: string) => x.trim());
+
+					let monthNumber = parseInt(mon, 10);  // e.g. 1 → January
+					let yearNumber = parseInt(yr, 10);    // e.g. 2025
+
+					if (!isNaN(monthNumber) && !isNaN(yearNumber)) {
+						filter["month"] = monthNumber;
+						filter["year"] = yearNumber;
+					}
+				} else {
+					filter["year"] = req.data.monthYear;
+				}
+			}
+
+
+
+			function escapeRegex(str: string): string {
+				return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			}
+
+			if (synonymSearches.length > 0) {
+				filter["$or"] = synonymSearches.map(syn => ({
+					itemDescription: { $regex: escapeRegex(syn), $options: "i" }
+				}));
+			}
+
+
+
+			// ✅ Exact matching for tableFilter
+			if (req?.data?.tableFilter && req.data.tableFilter.length > 0) {
+				for (const tf of req.data.tableFilter) {
+					if (tf.field && tf.value !== undefined && tf.value !== null) {
+						filter[tf.field] = tf.value;
+					}
+				}
+			}
+
+			if (req.data.searchText) {
+				filter["$or"] = [
+					{ itemDescription: { $regex: req.data.searchText, $options: "i" } },
+					{ importer: { $regex: req.data.searchText, $options: "i" } },
+					{ importerCountry: { $regex: req.data.searchText, $options: "i" } },
+					{ exporter: { $regex: req.data.searchText, $options: "i" } },
+					{ exporterCountry: { $regex: req.data.searchText, $options: "i" } },
+				];
+			}
+
+			// Advance Search
+
+			// console.log("filter 2.0  ", JSON.stringify(filter, null, 2));
+
+			// const productList = await ProductMaster.find(filter);
+
+
+			// 🔹 Aggregation for Top Importer Countries
+			const topImporterCountries = await ProductMaster.aggregate([
+				{ $match: filter },
+				{ $group: { _id: "$importerCountry", count: { $sum: 1 } } },
+				{ $sort: { count: -1 } },
+				{ $limit: 5 },
+				{ $project: { _id: 0, importerCountry: "$_id", count: 1 } }  // ✅ Rename _id → importerCountry
+			]);
+
+			// 🔹 Aggregation for Top Exporter Countries
+			const topExporterCountries = await ProductMaster.aggregate([
+				{ $match: filter },
+				{ $group: { _id: "$exporterCountry", count: { $sum: 1 } } },
+				{ $sort: { count: -1 } },
+				{ $limit: 5 },
+				{ $project: { _id: 0, exporterCountry: "$_id", count: 1 } }  // ✅ Rename _id → exporterCountry
+			]);
+
+			// 🔹 Top Buyers (Importers)
+			const topBuyers = await ProductMaster.aggregate([
+				{ $match: filter },
+				{ $group: { _id: "$importer", count: { $sum: 1 } } },
+				{ $sort: { count: -1 } },
+				{ $limit: 5 },
+				{ $project: { _id: 0, buyer: "$_id", count: 1 } } // ✅ Rename _id → buyer
+			]);
+
+			// 🔹 Top Suppliers (Exporters)
+			const topSuppliers = await ProductMaster.aggregate([
+				{ $match: filter },
+				{ $group: { _id: "$exporter", count: { $sum: 1 } } },
+				{ $sort: { count: -1 } },
+				{ $limit: 5 },
+				{ $project: { _id: 0, supplier: "$_id", count: 1 } } // ✅ Rename _id → supplier
+			]);
+
+			// 🔹 Average Unit Price Analysis Per Year
+			const avgPricePerYear = await ProductMaster.aggregate([
+				{ $match: filter }, // apply all filters you already built
+				{
+					$group: {
+						_id: "$year",
+						avgUnitRateInFC: { $avg: "$unitRateInFC" }, // ✅ average calculation
+						count: { $sum: 1 } // optional: number of records for context
+					}
+				},
+				{ $sort: { _id: 1 } }, // sort by year ascending
+				{
+					$project: {
+						_id: 0,
+						year: "$_id",
+						avgUnitRateInFC: { $round: ["$avgUnitRateInFC", 2] }, // round to 2 decimals
+						count: 1
+					}
+				}
+			]);
+
+			// 🔹 Average Volume (unitValueInINR) Per Year
+			const avgVolumePerYear = await ProductMaster.aggregate([
+				{ $match: filter }, // apply filters
+				{
+					$group: {
+						_id: "$year",
+						avgUnitValueInINR: { $avg: "$unitValueInINR" }, // ✅ calculate average
+						count: { $sum: 1 } // number of records contributing
+					}
+				},
+				{ $sort: { _id: 1 } }, // sort by year ascending
+				{
+					$project: {
+						_id: 0,
+						year: "$_id",
+						avgUnitValueInINR: { $round: ["$avgUnitValueInINR", 2] }, // round to 2 decimals
+						count: 1
+					}
+				}
+			]);
+
+			graphData.data = { topExporterCountries, topImporterCountries, topBuyers, topSuppliers, avgPricePerYear, avgVolumePerYear };
+			return graphData;
+		} catch (error: any) {
+			logger.info(`Error scheduling demo email: ${error.message} - ${error.stack} `);
+			graphData.data = [];
+			graphData.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_DB_ERROR);
+			return graphData;
+		}
+	}
+
+	public async getSearchHistory(req: RequestModel): Promise<SearchHistoryModelDTO> {
+		const searchDTO: SearchHistoryModelDTO = new SearchHistoryModelDTO(
+			CommonUtils.getDataResponse(eReturnCodes.R_SUCCESS)
+		);
+
+		const filterModel: CommonRequestModel = { ...req.data };
+		const offset = (filterModel.currentPage - 1) * filterModel.pageSize;
+		const limit = filterModel.pageSize;
+
+		let filter: any = {};
+
+		try {
+
+			console.log("req.data ", req.data, filterModel);
+			filterModel.totalRows = await SearchHistory.countDocuments();
+
+			if (filterModel.fromDate && filterModel.toDate) {
+				filter.searchedOn = {
+					$gte: new Date(filterModel.fromDate),
+					$lte: new Date(filterModel.toDate)
+				};
+			}
+
+			if (filterModel.searchText) {
+				filter["$or"] = [
+					{ fullName: { $regex: filterModel.searchText, $options: "i" } },
+					{ emailId: { $regex: filterModel.searchText, $options: "i" } }
+				];
+			}
+			if (filterModel.searchType) {
+				filter.searchType = filterModel.searchType
+			}
+
+			// 4️⃣ Run aggregation
+			filterModel.filterRowsCount = await SearchHistory.countDocuments();
+
+
+			const searchHistory = await SearchHistory.find(filter).limit(limit).skip(offset).sort({ searchedOn: -1 });
+
+
+			searchDTO.filterModel = filterModel;
+			searchDTO.data = searchHistory;
+			return searchDTO;
+		} catch (error: any) {
+			logger.info(`Error fetching search history: ${error.message} - ${error.stack} `);
+			searchDTO.data = [];
+			searchDTO.dataResponse = CommonUtils.getDataResponse(eReturnCodes.R_DB_ERROR);
+			return searchDTO;
+		}
+
+
+	}
 
 }
 
@@ -507,54 +783,21 @@ class ProductManagement {
 export default new ProductManagement();
 
 
-
-// async function buildAdvancedFilter(filters: any[]): Promise<any> {
-// 	if (!filters || filters.length === 0) return {};
-
-// 	const orGroups: any[] = [];
-// 	let currentAndGroup: any[] = [];
-
-// 	for (let i = 0; i < filters.length; i++) {
-// 		const f = filters[i];
-
-// 		// Build regex condition
-// 		const condition: any = {};
-// 		condition[f.field] = { $regex: f.value, $options: "i" };
-
-// 		currentAndGroup.push(condition);
-
-// 		// If logic is OR (or it's the last item), close current AND group
-// 		if (f.logic === "OR" || i === filters.length - 1) {
-// 			if (currentAndGroup.length === 1) {
-// 				// single condition
-// 				orGroups.push(currentAndGroup[0]);
-// 			} else if (currentAndGroup.length > 1) {
-// 				// group with AND
-// 				orGroups.push({ $and: currentAndGroup });
-// 			}
-// 			currentAndGroup = [];
-// 		}
-// 	}
-
-// 	// Build final filter
-// 	if (orGroups.length === 1) {
-// 		return orGroups[0]; // single group, no need for $or
-// 	}
-// 	if (orGroups.length > 1) {
-// 		return { $or: orGroups };
-// 	}
-// 	return {};
-// }
-async function buildAdvancedFilter(filters: any[]): Promise<any> {
+async function buildAdvancedFilter(filters: any[], searchHistory?: any): Promise<any> {
 	if (!filters || filters.length === 0) return {};
 
 	const orGroups: any[] = [];
 	let currentAndGroup: any[] = [];
-
+	let searchArray: any = [];
 	for (let i = 0; i < filters.length; i++) {
 		const f = filters[i];
 
 		let condition: any = {};
+
+		searchArray.push({
+			field: f.field,
+			value: f.value
+		})
 
 		// Use regex for strings, exact match for numbers
 		if (typeof f.value == "string") {
@@ -576,6 +819,7 @@ async function buildAdvancedFilter(filters: any[]): Promise<any> {
 		}
 	}
 
+	searchHistory.searchKeywords = searchArray;
 	if (orGroups.length === 1) return orGroups[0];
 	if (orGroups.length > 1) return { $or: orGroups };
 	return {};

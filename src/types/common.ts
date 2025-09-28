@@ -16,10 +16,11 @@ export type TResponse = {
 };
 
 export type TAuthorizationModel = {
-    userId: number;
+    userId: string;
     isAdmin: number;
     emailId: string;
     mobileNumber: string;
+    fullName: string;
 };
 
 export type TEmailOptions = {

@@ -357,10 +357,11 @@ class UserManagement {
 
 			const data: TAuthorizationModel = {
 				// Prepare the data for JWT token
-				userId: isUser._id as number,
+				userId: isUser._id as string,
 				emailId: isUser.emailId,
 				mobileNumber: isUser.mobileNumber,
-				isAdmin: isUser.isAdmin
+				isAdmin: isUser.isAdmin,
+				fullName: isUser.fullName
 			};
 
 			const token = jwt.sign(data, process.env.JWT_SECRET_KEY!, { expiresIn: "5h", });

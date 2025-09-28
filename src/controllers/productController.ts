@@ -1,11 +1,21 @@
 import logger from "../logger";
+import CommonUtils from "../utils/common";
 import { Request, Response } from "express";
+import { eReturnCodes } from "../enums/commonEnums";
+import { validationResult } from "express-validator";
 import ProductManagement from "../services/productService";
-
 
 export const getList = async (req: Request, res: Response): Promise<void> => {
   try {
-    res.json(await ProductManagement.getList(req.body));
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const data = CommonUtils.getDataResponse(eReturnCodes.R_INVALID_REQUEST);
+      data.description = errors.array()[0].msg;
+      res.status(200).json({ dataResponse: data, data: [] });
+      return;
+    } else {
+      res.json(await ProductManagement.getList(req.body, req));
+    }
   } catch (err) {
     logger.info((err as Error).message);
     res.status(500);
@@ -44,6 +54,22 @@ export const getSpecificRawById = async (req: Request, res: Response): Promise<v
 export const storeSynonymData = async (req: Request, res: Response): Promise<void> => {
   try {
     res.json(await ProductManagement.storeSynonymData(req.body));
+  } catch (err) {
+    logger.info((err as Error).message);
+    res.status(500);
+  }
+};
+export const getGraphData = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.json(await ProductManagement.getGraphData(req.body));
+  } catch (err) {
+    logger.info((err as Error).message);
+    res.status(500);
+  }
+};
+export const getSearchHistory = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.json(await ProductManagement.getSearchHistory(req.body));
   } catch (err) {
     logger.info((err as Error).message);
     res.status(500);
